@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows & Office Selector by DarkTemplar9530</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        h1 {
+            text-align: center;
+            color: #0078d4;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        select:focus {
+            border-color: #0078d4;
+            outline: none;
+        }
+        .desc {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #e9f6ff;
+            border-left: 4px solid #0078d4;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #555;
+            display: none;
+        }
+        #download {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #download a {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #0078d4;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #download a:hover {
+            background-color: #005a9e;
+        }
+        #theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 18px;
+        }
+        #theme-toggle:hover {
+            background-color: #005a9e;
+        }
+        .dark-mode {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .dark-mode select {
+            background-color: #2d2d2d;
+            border-color: #444;
+            color: #d4d4d4;
+        }
+        .dark-mode .desc {
+            background-color: #2a2a2a;
+            border-left-color: #0078d4;
+            color: #bbb;
+        }
+        .dark-mode h1 {
+            color: #4db2ff;
+        }
+        .dark-mode #theme-toggle::before {
+            content: '☀';
+        }
+        #theme-toggle::before {
+            content: '☾';
+        }
+        
+        /* Стили для блока USB предложения */
+        .usb-suggestion {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+        }
+        .dark-mode .usb-suggestion {
+            border-top-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>Windows & Office Selector by DarkTemplar9530</h1>
+    <button id="theme-toggle"></button>
+    <div id="main"></div>
+    <script>
+        const data = {
+    "Windows": {
+        "Оригинальные образы Windows (MSDN & VLSC)": {
+            "Windows XP": {
+                "32-bit": {
+                    "SP3 Professional OEM Refresh": {
+                        "Windows XP SP3 Pro OEM Refresh [32-bit] [Русский]": "https://disk.yandex.ru/d/sA_W1Ee-1Yl2zw"
+                    },
+                    "SP3 Professional Volume": {
+                        "Windows XP SP3 Pro Volume [32-bit] [Русский]": "https://disk.yandex.ru/d/DpH470MIyxXteA"
+                    }
+                },
+                "64-bit": {
+                    "Windows XP SP2 Pro Volume [64-bit] [English]": "https://disk.yandex.ru/d/LCkIaGJeSoeeYw"
+                }
+            },
+            "Windows Vista SP2": {
+                "Все Редакции": {
+                    "32-bit": {
+                        "Windows Vista SP2 [32-bit] [Русский]": "https://disk.yandex.ru/d/T5QMI_imZBpnTQ"
+                    },
+                    "64-bit": {
+                        "Windows Vista SP2 [64-bit] [Русский]": "https://disk.yandex.ru/d/vDT0s-BxgsLYqg"
+                    }
+                },
+                "Enterprise": {
+                    "32-bit": {
+                        "Windows Vista SP2 Enterprise [32-bit] [Русский]": "https://disk.yandex.ru/d/wRHwtcuVAGVplw"
+                    },
+                    "64-bit": {
+                        "Windows Vista SP2 Enterprise [64-bit] [Русский]": "https://disk.yandex.ru/d/Dp2EReDls7MYNQ"
+                    }
+                }
+            },
+            "Windows 7 SP1": {
+                "English (Updated August 2018)": {
+                    "32-bit": {
+                        "Windows 7 SP1 Pro [32-bit] [English]": "https://disk.yandex.ru/d/l8Ew_p74iRoHcA"
+                    },
+                    "64-bit": {
+                        "Windows 7 SP1 Pro [64-bit] [English]": "https://disk.yandex.ru/d/RmH_74xnvIZtqg"
+                    }
+                },
+                "Русский (Обновлено в мае 2011)": {
+                    "Professional Volume": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Pro Volume [32-bit] [Русский]": "https://disk.yandex.ru/d/CrKcHknkdWYDtw"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Pro Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/zmip0jnofzgA8w"
+                        }
+                    },
+                    "Ultimate": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Ultimate [32-bit] [Русский]": "https://disk.yandex.ru/d/GCCBcEXIBLcO2A"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Ultimate [64-bit] [Русский]": "https://disk.yandex.ru/d/XmJO4Kkal58PSQ"
+                        }
+                    },
+                    "Все Редакции": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Все Редакции [32-bit] [Русский]": "https://disk.yandex.ru/d/-mG22Z_MiPndPA"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Все Редакции [64-bit] [Русский]": "https://disk.yandex.ru/d/mx2lY6FTQM8o0A"
+                        }
+                    },
+                    "Enterprise": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Enterprise [32-bit] [Русский]": "https://disk.yandex.ru/d/7PD2uzQfZUwYkA"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Enterprise [64-bit] [Русский]": "https://disk.yandex.ru/d/UuBcnrBSkSfbrg"
+                        }
+                    }
+                }
+            },
+            "Windows 7 SP1 + UpdatePack7R2": {
+                "22.2.10": {
+                    "Professional Volume": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Pro Volume [32-bit] [Русский]": "https://disk.yandex.ru/d/GZq93CV-_j_xJg"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Pro Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/cI285kQH1miH5Q"
+                        }
+                    },
+                    "Все Редакции": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Все Редакции [32-bit] [Русский]": "https://disk.yandex.ru/d/3xU9HWoKZjRGyw"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Все Редакции [64-bit] [Русский]": "https://disk.yandex.ru/d/4M_3ZoVrOU9KQA"
+                        }
+                    },
+                    "Enterprise": {
+                        "32-bit": {
+                            "Windows 7 Enterprise SP1 U [32-bit] [Русский]": "https://disk.yandex.ru/d/4e7zKl__UeorTw"
+                        },
+                        "64-bit": {
+                            "Windows 7 Enterprise SP1 U [64-bit] [Русский]": "https://disk.yandex.ru/d/JPuF5hRvbKXEqQ"
+                        }
+                    },
+                    "Server 2008 R2 SP1 Volume": {
+                        "Windows Server 2008 R2 SP1 Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/_p7_Izc0h-rL5Q"
+                    }
+                },
+                "25.9.10": {
+                    "Professional Volume": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Pro Volume [32-bit] [Русский]": "https://disk.yandex.ru/d/6DPNU-Q5JAdP6Q"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Pro Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/d1KhyNnHjU6eeA"
+                        }
+                    },
+                    "Все Редакции": {
+                        "32-bit": {
+                            "Windows 7 SP1 U Все Редакции [32-bit] [Русский]": "https://disk.yandex.ru/d/0tiWIIjey87jVg"
+                        },
+                        "64-bit": {
+                            "Windows 7 SP1 U Все Редакции [64-bit] [Русский]": "https://disk.yandex.ru/d/Fr7Zz56iunhHPQ"
+                        }
+                    },
+                    "Enterprise": {
+                        "32-bit": {
+                            "Windows 7 Enterprise SP1 U [32-bit] [Русский]": "https://disk.yandex.ru/d/2CP8m9UybQPO8A"
+                        },
+                        "64-bit": {
+                            "Windows 7 Enterprise SP1 U [64-bit] [Русский]": "https://disk.yandex.ru/d/pNTJ4wW3Sj-E3w"
+                        }
+                    },
+                    "Server 2008 R2 SP1 Volume": {
+                        "Windows Server 2008 R2 SP1 Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/PMaakz7eI7frhg"
+                    }
+                }
+            },
+            "Windows 8": {
+                "Home & Pro": {
+                    "32-bit": {
+                        "Windows 8 Home & Pro [32-bit] [Русский]": "https://disk.yandex.ru/d/GFEWi4amNPU67Q"
+                    },
+                    "64-bit": {
+                        "Windows 8 Home & Pro [64-bit] [Русский]": "https://disk.yandex.ru/d/nHf9eUg6KW3pWQ"
+                    }
+                },
+                "Professional Volume": {
+                    "32-bit": {
+                        "Windows 8 Pro Volume [32-bit] [Русский]": "https://disk.yandex.ru/d/QXXv6VkQmLFslA"
+                    },
+                    "64-bit": {
+                        "Windows 8 Pro Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/doK-3lpxLGF2iw"
+                    }
+                },
+                "Enterprise": {
+                    "32-bit": {
+                        "Windows 8 Enterprise [32-bit] [Русский]": "https://disk.yandex.ru/d/HcFn95E38AXUjQ"
+                    },
+                    "64-bit": {
+                        "Windows 8 Enterprise [64-bit] [Русский]": "https://disk.yandex.ru/d/l_5Qe3L7k10_uQ"
+                    }
+                }
+            },
+            "Windows 8.1 UP3": {
+                "Home Single Language (HSL)": {
+                    "32-bit": {
+                        "Windows 8.1 UP3 Home Single Language [32-bit] [Русский]": "https://disk.yandex.ru/d/Djk1EzaR6HM4ng"
+                    },
+                    "64-bit": {
+                        "Windows 8.1 UP3 Home Single Language [64-bit] [Русский]": "https://disk.yandex.ru/d/NE05zQtlPf0aWg"
+                    }
+                },
+                "Home & Pro": {
+                    "32-bit": {
+                        "Windows 8.1 UP3 Home & Pro [32-bit] [Русский]": "https://disk.yandex.ru/d/4B0gOnMHoFrnFg"
+                    },
+                    "64-bit": {
+                        "Windows 8.1 UP3 Home & Pro [64-bit] [Русский]": "https://disk.yandex.ru/d/ToV9KcKoLpClIA"
+                    }
+                },
+                "Professional Volume": {
+                    "32-bit": {
+                        "Windows 8.1 UP3 Pro Volume [32-bit] [Русский]": "https://disk.yandex.ru/d/Erc9y_3lBPZMhA"
+                    },
+                    "64-bit": {
+                        "Windows 8.1 UP3 Pro Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/R15L7Qq3kLJAAQ"
+                    }
+                },
+                "Enterprise": {
+                    "32-bit": {
+                        "Windows 8.1 UP3 Enterprise [32-bit] [Русский]": "https://disk.yandex.ru/d/H0AsVee4X8qkFw"
+                    },
+                    "64-bit": {
+                        "Windows 8.1 UP3 Enterprise [64-bit] [Русский]": "https://disk.yandex.ru/d/UQ9YM48L7HyHPw"
+                    }
+                }
+            },
+            "Windows 10 22H2": {
+                "Consumer Edition (Потребительские издания)": {
+                    "32-bit": {
+                        "Windows 10 22H2 [32-bit] [Русский]": "https://disk.yandex.ru/d/cFVmmA6ShmV-AA"
+                    },
+                    "64-bit": {
+                        "Windows 10 22H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/uevi48MMz57RWA"
+                    }
+                },
+                "Business Edition (Бизнес издания)": {
+                    "32-bit": {
+                        "Windows 10 22H2 [32-bit] [Русский]": "https://disk.yandex.ru/d/dm2DOUiSSuBANw"
+                    },
+                    "64-bit": {
+                        "Windows 10 22H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/AWXsxLkdTAmK_g"
+                    },
+                    "ARM64": {
+                        "Windows 10 22H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/mwDua6IgmEOHkQ"
+                    }
+                }
+            },
+            "Windows 11": {
+                "23H2": {
+                    "Consumer Edition (Потребительское издание)": {
+                        "Windows 11 23H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/JPMWfPNhdM_agQ"
+                    },
+                    "Business Edition (Бизнес издания)": {
+                        "64-bit": {
+                            "Windows 11 23H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/0x0A14o5bLutgg"
+                        },
+                        "ARM64": {
+                            "Windows 11 23H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/7i2EV3GrI0r-Sg"
+                        }
+                    }
+                },
+                "24H2": {
+                    "Consumer Edition (Потребительские издания)": {
+                        "64-bit": {
+                            "Windows 11 24H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/T7Ws4_w7GeGpaw"
+                        },
+                        "ARM64": {
+                            "Windows 11 24H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/9BjKugJY3BbP3g"
+                        }
+                    },
+                    "Business Edition (Бизнес издания)": {
+                        "64-bit": {
+                            "Windows 11 24H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/0nYmKKue86Wlcw"
+                        },
+                        "ARM64": {
+                            "Windows 11 24H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/EP11FDaUOcghgA"
+                        }
+                    }
+                },
+                "25H2": {
+                    "Consumer Edition (Потребительские издания)": {
+                        "64-bit": {
+                            "Windows 11 25H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/x1pjmFsNxHNohQ"
+                        },
+                        "ARM64": {
+                            "Windows 11 25H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/Kv8ceiJKPP0Mxg"
+                        }
+                    },
+                    "Business Edition (Бизнес издания)": {
+                        "64-bit": {
+                            "Windows 11 25H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/3_8Bk5WgcrvuNQ"
+                        },
+                        "ARM64": {
+                            "Windows 11 25H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/gA4wa36Rq6oq4g"
+                        }
+                    }
+                }
+            },
+            "Windows Enterprise": {
+                "Windows 10": {
+                    "LTSB": {
+                        "2015": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSB 2015 [32-bit] [Русский]": "https://disk.yandex.ru/d/0o_1I41kugORyg"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSB 2015 [64-bit] [Русский]": "https://disk.yandex.ru/d/USmmIausXG4wdg"
+                            }
+                        },
+                        "2016": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSB 2016 [32-bit] [Русский]": "https://disk.yandex.ru/d/ELl0AaZVjTHkFQ"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSB 2016 [64-bit] [Русский]": "https://disk.yandex.ru/d/6xi3mFhycAQDpQ"
+                            }
+                        }
+                    },
+                    "LTSC": {
+                        "2019": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSC 2019 [32-bit] [Русский]": "https://disk.yandex.ru/d/02PeM6ZZ2ba0og"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSC 2019 [64-bit] [Русский]": "https://disk.yandex.ru/d/epRB6WIkCxqMaw"
+                            }
+                        },
+                        "2021": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSC 2021 [32-bit] [Русский]": "https://disk.yandex.ru/d/lKqtQzyQFh3fhw"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSC 2021 [64-bit] [Русский]": "https://disk.yandex.ru/d/fYv_eWK3jNicTA"
+                            }
+                        }
+                    },
+                    "IoT LTSC": {
+                        "2019": {
+                            "32-bit": {
+                                "Windows 10 IoT Enterprise LTSC 2019 [32-bit] [English]": "https://disk.yandex.ru/d/QnM86SHDlyNGzA"
+                            },
+                            "64-bit": {
+                                "Windows 10 IoT Enterprise LTSC 2019 [64-bit] [English]": "https://disk.yandex.ru/d/at-dWmkNphxUtA"
+                            }
+                        },
+                        "2021": {
+                            "64-bit": {
+                                "Windows 10 IoT Enterprise LTSC 2021 [64-bit] [English]": "https://disk.yandex.ru/d/4X0mYfHGjZyYdw"
+                            },
+                            "ARM64": {
+                                "Windows 10 IoT Enterprise LTSC 2021 [ARM64] [English]": "https://disk.yandex.ru/d/7vpA31zDgqiO1Q"
+                            }
+                        }
+                    },
+                    "IoT 22H2": {
+                        "64-bit": {
+                            "Windows 10 IoT Enterprise, version 22H2 [64-bit] [English]": "https://disk.yandex.ru/d/en5nCPPj9LuanA"
+                        },
+                        "ARM64": {
+                            "Windows 10 IoT Enterprise, version 22H2 [ARM64] [English]": "https://disk.yandex.ru/d/YxItUpAERrbKEA"
+                        }
+                    }
+                },
+                "Windows 11": {
+                    "LTSC 2024": {
+                        "Windows 11 Enterprise LTSC 2024 [64-bit] [Русский]": "https://disk.yandex.ru/d/UPYtKzrJolzHXA"
+                    },
+                    "IoT LTSC 2024": {
+                        "64-bit": {
+                            "Windows 11 IoT Enterprise LTSC 2024 [64-bit] [English]": "https://disk.yandex.ru/d/GdgCv93f2g2duA"
+                        },
+                        "ARM64": {
+                            "Windows 11 IoT Enterprise LTSC 2024 [ARM64] [English]": "https://disk.yandex.ru/d/RvIUJW_br_7pMg"
+                        }
+                    },
+                    "IoT 24H2": {
+                        "64-bit": {
+                            "Windows 11 IoT Enterprise, version 24H2 [64-bit] [English]": "https://disk.yandex.ru/d/zNs23uc7vgB0RA"
+                        },
+                        "ARM64": {
+                            "Windows 11 IoT Enterprise, version 24H2 [ARM64] [English]": "https://disk.yandex.ru/d/6ZeUN3QpdDle_w"
+                        }
+                    },
+                    "IoT 25H2": {
+                        "64-bit": {
+                            "Windows 11 IoT Enterprise, version 25H2 [64-bit] [English]": "https://disk.yandex.ru/d/kKdAobw6FqrNfg"
+                        },
+                        "ARM64": {
+                            "Windows 11 IoT Enterprise, version 25H2 [ARM64] [English]": "https://disk.yandex.ru/d/yiaADGmDC7APEw"
+                        }
+                    }
+                }
+            },
+            "Windows Server": {
+                "2008 R2 SP1 Volume": {
+                    "Windows Server 2008 R2 SP1 Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/o_djznmq3a65-A"
+                },
+                "2019": {
+                    "Windows Server 2019 [64-bit] [Русский]": "https://disk.yandex.ru/d/R9nPGdVP_622SA"
+                },
+                "2022": {
+                    "Windows Server 2022 (21H2) [64-bit] [Русский]": "https://disk.yandex.ru/d/MGpwZnF8rEycEw"
+                },
+                "23H2": {
+                    "Windows Server 23H2 [64-bit] [Мультиязычный]": "https://disk.yandex.ru/d/fHfk5t91q120pw"
+                },
+                "2025": {
+                    "Windows Server 2025 (24H2) [64-bit] [Русский]": "https://disk.yandex.ru/d/zwdEYScdUlP7xQ"
+                }
+            }
+        },
+        "Windows by UUP dump": {
+            "Windows 10 22H2": {
+                "32-bit": {
+                    "Windows 10 22H2 [32-bit] [Русский]": "https://disk.yandex.ru/d/4Hz94iQty9WV7Q"
+                },
+                "64-bit": {
+                    "Windows 10 22H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/HokI4GrsDz0yKA"
+                },
+                "ARM64": {
+                    "Windows 10 22H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/oz0-t8-V9RJCEw"
+                }
+            },
+            "Windows 11": {
+                "23H2": {
+                    "64-bit": {
+                        "Windows 11 23H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/AU5hQyyfuhhbbA"
+                    },
+                    "ARM64": {
+                        "Windows 11 23H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/bOnO5bR_IxmHdA"
+                    }
+                },
+                "24H2": {
+                    "64-bit": {
+                        "Windows 11 24H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/YM0kaA6rOhvbcw"
+                    },
+                    "ARM64": {
+                        "Windows 11 24H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/iAe4sjtWDF5fbA"
+                    }
+                },
+                "24H2 WNC Cloud PC OS": {
+                    "64-bit": {
+                        "Windows 11 24H2 WNC Cloud PC OS [64-bit] [English]": "https://disk.yandex.ru/d/LbfeWU__ct_JsQ"
+                    },
+                    "ARM64": {
+                        "Windows 11 24H2 WNC Cloud PC OS [ARM64] [English]": "https://disk.yandex.ru/d/JMsDv5hnH8p2Ig"
+                    }
+                },
+                "25H2": {
+                    "64-bit": {
+                        "Windows 11 25H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/KwQAj9CIsvWNcQ"
+                    },
+                    "ARM64": {
+                        "Windows 11 25H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/sOjckcb1LlmW2w"
+                    }
+                },
+                "26H1": {
+                    "64-bit": {
+                        "Windows 11 26H1 [64-bit] [Русский]": "https://disk.yandex.ru/d/7k9a4J_x139EbQ"
+                    },
+                    "ARM64": {
+                        "Windows 11 26H1 [ARM64] [Русский]": "https://disk.yandex.ru/d/yDRjv7ucsnr28g"
+                    }
+                }
+            },
+            "Windows Server": {
+                "21H2": {
+                    "Windows Server 2022 (21H2) [64-bit] [Русский]": "https://disk.yandex.ru/d/Nc18qrZzv1GWSQ"
+                },
+                "22H2": {
+                    "Windows Server 22H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/KclUmGEuXHnEKw"
+                },
+                "23H2": {
+                    "Windows Server 23H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/5cxartF_MJCd4g"
+                },
+                "24H2": {
+                    "Windows Server 2025 (24H2) [64-bit] [Русский]": "https://disk.yandex.ru/d/RLG76WSubW-CRA"
+                },
+                "24H2 Beta": {
+                    "64-bit": {
+                        "Windows Server 2025 (24H2) Beta [64-bit] [Русский]": "https://disk.yandex.ru/d/Uqp60lAWWES4IA"
+                    },
+                    "ARM64": {
+                        "Windows Server 2025 (24H2) Beta [ARM64] [Русский]": "https://disk.yandex.ru/d/48W9gTkxLM0X5Q"
+                    }
+                }
+            }
+        },
+        "Windows by rgadguard": {
+            "Windows XP SP3": {
+                "Windows XP SP3 [32-bit] [Русский]": "https://disk.yandex.ru/d/aY-VKqxlNWPAPw"
+            },
+            "Windows Vista SP2": {
+                "32-bit": {
+                    "Windows Vista SP2 [32-bit] [Русский]": "https://disk.yandex.ru/d/WiSt3Wei8WdqCQ"
+                },
+                "64-bit": {
+                    "Windows Vista SP2 [64-bit] [Русский]": "https://disk.yandex.ru/d/ZyuZ_QzhNvy7pQ"
+                }
+            },
+            "Windows 7 SP1": {
+                "32-bit": {
+                    "Windows 7 SP1 [32-bit] [Русский]": "https://disk.yandex.ru/d/7seczVkGX2n0OQ"
+                },
+                "64-bit": {
+                    "Windows 7 SP1 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/dsDhd6CS4w76dQ"
+                }
+            },
+            "Windows 8": {
+                "Windows 8 [64-bit] [Русский]": "https://disk.yandex.ru/d/ofVec6JY2AbAEg"
+            },
+            "Windows 8.1 UP3": {
+                "32-bit": {
+                    "Windows 8.1 UP3 [32-bit] [Русский]": "https://disk.yandex.ru/d/itfgmxehGWe8Yw"
+                },
+                "64-bit": {
+                    "Windows 8.1 UP3 [64-bit] [Русский]": "https://disk.yandex.ru/d/UbGAxhw27vuFmw"
+                }
+            },
+            "Windows 10 22H2": {
+                "32-bit": {
+                    "Windows 10 22H2 [32-bit] [Русский & English]": "https://disk.yandex.ru/d/Wmx9AVwE-v-2gQ"
+                },
+                "64-bit": {
+                    "Windows 10 22H2 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/nJnLixcQ87Ef6Q"
+                },
+                "ARM64": {
+                    "Windows 10 22H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/xl2WcZaYQDPw4w"
+                }
+            },
+            "Windows 11": {
+                "23H2": {
+                    "64-bit": {
+                        "Windows 11 23H2 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/EYNI3CAU2r_5dg"
+                    },
+                    "ARM64": {
+                        "Windows 11 23H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/E1UjRvSqoTewpQ"
+                    }
+                },
+                "24H2": {
+                    "64-bit": {
+                        "Windows 11 24H2 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/_4swwioRKO965A"
+                    },
+                    "ARM64": {
+                        "Windows 11 24H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/IPXfW6Lgor0LWg"
+                    }
+                },
+                "25H2": {
+                    "64-bit": {
+                        "Windows 11 25H2 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/ZKYv73PYc7ePDg"
+                    },
+                    "ARM64": {
+                        "Windows 11 25H2 [ARM64] [Русский]": "https://disk.yandex.ru/d/kirqMbyVEPqqYg"
+                    }
+                },
+                "26H1": {
+                    "64-bit": {
+                        "Windows 11 26H1 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/kmKCdqo8Xf1kkA"
+                    },
+                    "ARM64": {
+                        "Windows 11 26H1 [ARM64] [Русский]": "https://disk.yandex.ru/d/KM8JWqMpNfxLRA"
+                    }
+                }
+            },
+            "Windows Enterprise": {
+                "Windows 10": {
+                    "LTSB": {
+                        "2015": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSB 2015 [32-bit] [Русский & English]": "https://disk.yandex.ru/d/SvF8vshFchFGOA"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSB 2015 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/KQLFNqsy0ymLww"
+                            }
+                        },
+                        "2016": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSB 2016 [32-bit] [Русский & English]": "https://disk.yandex.ru/d/nvHvv75fn3h2uw"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSB 2016 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/wjPh3O2NhlgBhQ"
+                            }
+                        }
+                    },
+                    "LTSC": {
+                        "2019": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSC 2019 [32-bit] [Русский & English]": "https://disk.yandex.ru/d/xYq0tUvXz36gJQ"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSC 2019 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/7Cfr7vcKMyNfXA"
+                            }
+                        },
+                        "2021": {
+                            "32-bit": {
+                                "Windows 10 Enterprise LTSC 2021 [32-bit] [Русский & English]": "https://disk.yandex.ru/d/p6MkdL7W0gVDag"
+                            },
+                            "64-bit": {
+                                "Windows 10 Enterprise LTSC 2021 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/b-CfcUkyAiInZw"
+                            },
+                            "ARM64": {
+                                "Windows 10 Enterprise LTSC 2021 [ARM64] [Русский]": "https://disk.yandex.ru/d/IuiVfTer7FpmYw"
+                            }
+                        }
+                    }
+                },
+                "Windows 11 LTSC 2024": {
+                    "64-bit": {
+                        "Windows 11 Enterprise LTSC 2024 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/j1RHpk_76fNDHg"
+                    },
+                    "ARM64": {
+                        "Windows 11 Enterprise LTSC 2024 [ARM64] [Русский]": "https://disk.yandex.ru/d/8efhS-lHxfpu5g"
+                    }
+                }
+            },
+            "Windows Server": {
+                "2008": {
+                    "SP2": {
+                        "32-bit": {
+                            "Windows Server 2008 SP2 [32-bit] [Русский]": "https://disk.yandex.ru/d/xYe_rSe6X1sbZQ"
+                        },
+                        "64-bit": {
+                            "Windows Server 2008 SP2 [64-bit] [Русский]": "https://disk.yandex.ru/d/yKrYl46pxELVYQ"
+                        }
+                    },
+                    "R2 SP1": {
+                        "Windows Server 2008 R2 SP1 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/fpvqnm3_kk7s3g"
+                    }
+                },
+                "2012": {
+                    "UP1": {
+                        "Windows Server 2012 UP1 [64-bit] [Русский]": "https://disk.yandex.ru/d/WHNmCfD8lXDwkg"
+                    },
+                    "R2 UP3": {
+                        "Windows Server 2012 R2 UP3 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/W7kVCCLfNVKq1Q"
+                    }
+                },
+                "2016": {
+                    "Windows Server 2016 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/oRZsI1G6BMIE8g"
+                },
+                "2019": {
+                    "Windows Server 2019 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/bbZg-2Ctf-tXPw"
+                },
+                "2022": {
+                    "Windows Server 2022 (21H2) [64-bit] [Русский & English]": "https://disk.yandex.ru/d/P-MotKzcj26E8A"
+                },
+                "23H2": {
+                    "Windows Server 23H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/p18ym0k387jbEg"
+                },
+                "2025": {
+                    "Windows Server 2025 (24H2) [64-bit] [Русский & English]": "https://disk.yandex.ru/d/-stFb9gCrA_2QQ"
+                },
+                "Azure Stack HCI 22H2": {
+                    "Windows Server Azure Stack HCI 22H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/Fgtr8MIIGYPNNg"
+                }
+            }
+        },
+        "Windows by NTDEV + tiny11builder & nano11builder": {
+            "Создание своей сборки": {
+                "tiny11builder": "https://disk.yandex.ru/d/h3oDXsBm-cOcxA",
+                "nano11builder": "https://disk.yandex.ru/d/Y6cppIDFs8nZng"
+            },
+            "Устаревшие образы, без обновлений": {
+                "Windows 10": {
+                    "32-bit": {
+                        "tiny10 2303 [32-bit] [English]": "https://disk.yandex.ru/d/fJaJFTVZTUNZyA"
+                    },
+                    "64-bit": {
+                        "tiny10 23H2 [64-bit] [English]": "https://disk.yandex.ru/d/w7qXbQlEIQE1TA"
+                    }
+                },
+                "Windows 11": {
+                    "64-bit": {
+                        "tiny11 2311 [64-bit] [English]": "https://disk.yandex.ru/d/h-wxEMimIcFXKQ"
+                    },
+                    "ARM64": {
+                        "tiny11 for Arm64 (tiny11a64 r1)": {
+                            "tiny11 for Arm64 / tiny11a64 r1 [ARM64] [English]": "https://disk.yandex.ru/d/ks67_SrZMtWYvA"
+                        },
+                        "tiny11 core": {
+                            "tiny11 core for arm64 [ARM64] [English]": "https://disk.yandex.ru/d/aCwpyAFTZ28GuQ"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "Office": {
+        "Ratiborus с автообновлениями (Рекомендуется)": {
+            "Office Installer+ (Обновляемая)": "https://disk.yandex.ru/d/blcb37yzdscGcw",
+            "Office 2013-2024 C2R Install (Устаревшая)": "https://disk.yandex.ru/d/Oo6BhK_U6zh7uQ"
+        },
+        "Office by rgadguard": {
+            "2007 SP3": {
+                "Office 2007 SP3 [32-bit] [Русский]": "https://disk.yandex.ru/d/r3YfZ0VswC4c_w"
+            },
+            "2010 SP2": {
+                "32-bit": {
+                    "Office 2010 SP2 [32-bit] [Русский]": "https://disk.yandex.ru/d/OvfixQ1zKD4lnQ"
+                },
+                "64-bit": {
+                    "Office 2010 SP2 [64-bit] [Русский]": "https://disk.yandex.ru/d/zHUUgNUdXTvSFw"
+                }
+            },
+            "2013 SP1 Volume": {
+                "32-bit": {
+                    "Office 2013 SP1 [32-bit] [Русский]": "https://disk.yandex.ru/d/CAZ5E3yTDiuHIA"
+                },
+                "64-bit": {
+                    "Office 2013 SP1 [64-bit] [Русский]": "https://disk.yandex.ru/d/LbudVX4yX94oUA"
+                }
+            },
+            "2016 Volume": {
+                "32-bit": {
+                    "Office 2016 [32-bit] [Русский & English]": "https://disk.yandex.ru/d/MBaVhUjnYNsvPQ"
+                },
+                "64-bit": {
+                    "Office 2016 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/BI-D1AdZb7uhrA"
+                }
+            },
+            "2016-2024": {
+                "Retail Channel": {
+                    "Office 2016-2024 Retail [Русский & English]": "https://disk.yandex.ru/d/M5UAFAOSb-qAqw"
+                },
+                "Volume Channel": {
+                    "Office 2016-2024 Volume [Русский & English]": "https://disk.yandex.ru/d/UN89Le1Edmc32A"
+                }
+            }
+        }
+    },
+    "Активировать Windows и/или Office": {
+        "Microsoft Activation Scripts (MAS) (Рекомендуется)": "https://disk.yandex.ru/d/4bT-qC8MkT5h6w",
+        "KMS": {
+            "KMS Tools Portable": "https://disk.yandex.ru/d/qRFBrfiN288SwQ",
+            "KMSAuto++ Portable": {
+                "Beta": "https://disk.yandex.ru/d/_nMj3H2a3PZn1g",
+                "Release": "https://disk.yandex.ru/d/eHqqMKkSkm3SIQ"
+            }
+        }
+    },
+    "Получить доступ ко всему содержимому Яндекс Диска": "https://disk.yandex.ru/d/F8wP3MGbPxX8zw"
+};
+        const sourceDescs = {
+            "Оригинальные образы Windows (MSDN & VLSC)": "Самые последние официальные, оригинальные сборки, созданные Microsoft. Сборки MSDN обновляются каждый 3-й вторник месяца, VLSC – каждый 4-й понедельник месяца.",
+            "Windows by UUP dump": "Скрипт, позволяющий скачивать оригинальные файлы с серверов обновления Windows и преобразовывать их в готовый (.iso) образ. Здесь представлены уже готовые образы. Обновления выходят каждый 2-й вторник месяца (Вторник патчей), также иногда выпускаются внеплановые накопительные обновления после Вторника патчей, которые не интегрируются в оригинальные образы от Microsoft, хоть и выходят позже. Cписок редакций в образе значительно больше. Это точно такие же оригинальные образы, просто собранные по-другому.",
+            "Windows by rgadguard": "Сборки на основе оригинальных образов MSDN с последующей интеграцией последних обновлений. В них нет никаких косметических изменений и ничего не вырезано. Системы не были в режиме аудита. Присутствует самое большое количество редакций в одном .iso образе. В Windows 11 уже отключены проверки: TPM, Security boot, CPU, Storage и RAM-память. В Windows 10 & 11 также отключён автоматический BitLocker.",
+            "Windows by NTDEV + tiny11builder & nano11builder": "Облегчённые сборки, не имеющие никакого отношения к оригинальным. Добавлены исключительно ради тестирования и веселья (ну, кому как). Ни в коем случае не устанавливать в качестве основной системы!",
+            "Запись образа Windows на USB-накопитель": "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено нескольких вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.",
+            "Чистая установка Windows 10, 11": "Файл ответов \"autounattend.xml\" позволяет устанавливать Windows в полуавтоматическом режиме. Здесь представлены уже настроенные файлы для каждой из архитектур. Что с ним делать? Всё просто. Скачайте оригинальный образ Windows от Microsoft и выполните следующие действия: 1) Запишите образ Windows на USB-накопитель. 2) Скопируйте файл \"autounattend.xml\" в корневую папку USB-накопителя, содержащего файлы установки Windows, и подключите его к компьютеру. Файл \"autounattend.xml\" будет находиться в той же папке, что и файл \"setup.exe\". 3) Загрузитесь с USB-накопителя, чтобы начать установку."
+        };
+        const bitnessDesc = "Разрядность или Архитектура операционной системы. Устанавливать ARM64 – только при наличии процессора на архитектуре ARM, например, от Apple или Qualcomm. 32-bit – если ОЗУ < 4 ГБ.";
+        const editionDesc = "Если нужна редакция «Домашняя (Home / HSL)», то выбираем «Consumer Edition», если – «Корпоративная (Enterprise)» – «Business Edition». Для редакции «Профессиональная (Pro)» разницы как таковой нет, но если у вас была ранее активирована Windows 10/11 Pro «Consumer Edition», то при переходе на «Business Edition» активировать Windows нужно будет заново. В любом случае, проблем с активацией не будет ни у одной из сборок. Устанавливать можно любую.";
+        const usbDesc = "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено нескольких вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.";
+
+        const main = document.getElementById('main');
+        
+        buildNext(main, data, [], true);
+
+        function appendUsbSuggestion(container, path) {
+            if (path[0] !== 'Windows') return;
+
+            let toolUrl = '';
+            let toolName = '';
+
+            const fullPath = path.join(' ');
+
+            if (fullPath.includes('Windows XP')) {
+                toolUrl = 'https://disk.yandex.ru/d/XLyO70kcB3hXGw';
+                toolName = 'Запись образа на USB-накопитель';
+            } else if (fullPath.includes('Windows 7')) {
+                toolUrl = 'https://disk.yandex.ru/d/AMAtqtojBumDoA';
+                toolName = 'Запись образа на USB-накопитель';
+            } else if (
+                fullPath.includes('Windows 8') || 
+                fullPath.includes('Windows 10') || 
+                fullPath.includes('Windows 11')
+            ) {
+                toolUrl = 'https://disk.yandex.ru/d/z97KEl-7laHO5Q';
+                toolName = 'Запись образа на USB-накопитель';
+            }
+
+            if (toolUrl) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'usb-suggestion';
+
+                const linkDiv = document.createElement('div');
+                linkDiv.id = 'download';
+                linkDiv.innerHTML = `<a href="${toolUrl}" target="_blank">${toolName}</a>`;
+                wrapper.appendChild(linkDiv);
+
+                const descDiv = document.createElement('div');
+                descDiv.className = 'desc';
+                descDiv.style.display = 'block';
+                descDiv.innerHTML = usbDesc;
+                wrapper.appendChild(descDiv);
+
+                container.appendChild(wrapper);
+            }
+        }
+
+        function buildNext(container, currentObj, path, isRoot = false) {
+            if (!currentObj) return;
+
+            if (typeof currentObj === 'string') {
+                const downloadDiv = document.createElement('div');
+                downloadDiv.id = 'download';
+                downloadDiv.innerHTML = `<a href="${currentObj}" target="_blank">Скачать / Перейти</a>`;
+                container.appendChild(downloadDiv);
+                
+                appendUsbSuggestion(container, path);
+                return;
+            }
+
+            const keys = Object.keys(currentObj);
+            if (keys.length === 0) return;
+            
+            const isEndNode = keys.every(k => typeof currentObj[k] === 'string');
+
+            if (isEndNode) {
+                if (keys.length === 1) {
+                    const fileName = keys[0];
+                    const url = currentObj[fileName];
+                    const downloadDiv = document.createElement('div');
+                    downloadDiv.id = 'download';
+                    downloadDiv.innerHTML = `<a href="${url}" target="_blank">Скачать ${fileName}</a>`;
+                    container.appendChild(downloadDiv);
+                    
+                    appendUsbSuggestion(container, path);
+                    return;
+                }
+
+                const select = document.createElement('select');
+                select.innerHTML = '<option value="">Выберите файл</option>' + keys.map(k => `<option value="${k}">${k}</option>`).join('');
+                container.appendChild(select);
+                
+                const downloadDiv = document.createElement('div');
+                downloadDiv.id = 'download';
+                container.appendChild(downloadDiv);
+                
+                const usbContainer = document.createElement('div');
+                container.appendChild(usbContainer);
+                
+                select.onchange = function() {
+                    const val = this.value;
+                    downloadDiv.innerHTML = '';
+                    usbContainer.innerHTML = '';
+                    if (val) {
+                        const url = currentObj[val];
+                        downloadDiv.innerHTML = `<a href="${url}" target="_blank">Скачать</a>`;
+                        appendUsbSuggestion(usbContainer, path);
+                    }
+                };
+                return;
+            }
+            
+            const wrapper = document.createElement('div');
+            
+            const select = document.createElement('select');
+            
+            let defaultOptionText = "Выберите";
+            if (isRoot) defaultOptionText = "Выберите, что хотите скачать или сделать";
+            
+            select.innerHTML = `<option value="">${defaultOptionText}</option>` + keys.map(k => `<option value="${k}">${k}</option>`).join('');
+            wrapper.appendChild(select);
+
+            const isBitness = keys.some(k => k.includes('-bit') || k === 'ARM64');
+            const isEdition = keys.some(k => k.includes('Consumer Edition') || k.includes('Business Edition'));
+            
+            const staticDescDiv = document.createElement('div');
+            staticDescDiv.className = 'desc';
+            
+            if (isBitness && path.length > 0 && path[0] === 'Windows') {
+                staticDescDiv.innerHTML = bitnessDesc;
+                staticDescDiv.style.display = 'block';
+            } else if (isEdition) {
+                staticDescDiv.innerHTML = editionDesc;
+                staticDescDiv.style.display = 'block';
+            }
+            wrapper.appendChild(staticDescDiv);
+            
+            const selectionDescDiv = document.createElement('div');
+            selectionDescDiv.className = 'desc';
+            wrapper.appendChild(selectionDescDiv);
+
+            const nextLevelContainer = document.createElement('div');
+            wrapper.appendChild(nextLevelContainer);
+
+            container.appendChild(wrapper);
+            
+            select.onchange = function() {
+                const val = this.value;
+                
+                nextLevelContainer.innerHTML = '';
+                selectionDescDiv.style.display = 'none';
+                selectionDescDiv.innerHTML = '';
+
+                if (val) {
+                    if (sourceDescs[val]) {
+                        selectionDescDiv.innerHTML = sourceDescs[val];
+                        selectionDescDiv.style.display = 'block';
+                    }
+
+                    buildNext(nextLevelContainer, currentObj[val], [...path, val]);
+                }
+            };
+        }
+        
+        const toggleButton = document.getElementById('theme-toggle');
+        const storedTheme = localStorage.getItem('theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
+            document.body.classList.add('dark-mode');
+        }
+
+        toggleButton.onclick = function() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        };
+    </script>
+</body>
+</html>
