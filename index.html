@@ -18,6 +18,23 @@
             text-align: center;
             color: #0078d4;
         }
+        #search-container {
+            margin-bottom: 20px;
+        }
+        #search-input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+        }
+        #search-input:focus {
+            border-color: #0078d4;
+            outline: none;
+        }
+
         select {
             width: 100%;
             padding: 12px;
@@ -81,7 +98,8 @@
             background-color: #1e1e1e;
             color: #d4d4d4;
         }
-        .dark-mode select {
+        .dark-mode select, 
+        .dark-mode #search-input {
             background-color: #2d2d2d;
             border-color: #444;
             color: #d4d4d4;
@@ -101,7 +119,6 @@
             content: '☾';
         }
         
-        /* Стили для блока USB предложения */
         .usb-suggestion {
             margin-top: 30px;
             border-top: 1px solid #ccc;
@@ -110,12 +127,28 @@
         .dark-mode .usb-suggestion {
             border-top-color: #444;
         }
+        
+        #no-results {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin-top: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h1>Windows & Office Selector by DarkTemplar9530</h1>
     <button id="theme-toggle"></button>
+    
+    <!-- Поле поиска -->
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Поиск (например: Windows 10, Office 2016)...">
+    </div>
+
     <div id="main"></div>
+    <div id="no-results">Ничего не найдено</div>
+
     <script>
         const data = {
     "Windows": {
@@ -844,8 +877,57 @@
         const usbDesc = "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено нескольких вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.";
 
         const main = document.getElementById('main');
-        
+        const searchInput = document.getElementById('search-input');
+        const noResults = document.getElementById('no-results');
+
         buildNext(main, data, [], true);
+
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            main.innerHTML = '';
+            noResults.style.display = 'none';
+
+            if (!query) {
+                buildNext(main, data, [], true);
+                return;
+            }
+
+            const filteredData = filterObject(data, query);
+
+            if (filteredData && Object.keys(filteredData).length > 0) {
+                buildNext(main, filteredData, [], true);
+            } else {
+                noResults.style.display = 'block';
+            }
+        });
+
+        function filterObject(obj, query) {
+            if (typeof obj !== 'object' || obj === null) return null;
+
+            const result = {};
+            let hasMatch = false;
+
+            for (const key in obj) {
+                if (key.toLowerCase().includes(query)) {
+                    result[key] = obj[key];
+                    hasMatch = true;
+                    continue;
+                }
+
+                const child = obj[key];
+                
+                if (typeof child === 'string') continue; 
+
+                const filteredChild = filterObject(child, query);
+                
+                if (filteredChild && Object.keys(filteredChild).length > 0) {
+                    result[key] = filteredChild;
+                    hasMatch = true;
+                }
+            }
+            
+            return hasMatch ? result : null;
+        }
 
         function appendUsbSuggestion(container, path) {
             if (path[0] !== 'Windows') return;
