@@ -18,6 +18,92 @@
             text-align: center;
             color: #0078d4;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #main > div, select, .desc, .search-result-item {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .search-result-item {
+            margin: 12px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .search-result-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .dark-mode .search-result-item {
+            background-color: #2d2d2d;
+            border-color: #444;
+        }
+        .search-result-path {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .dark-mode .search-result-path {
+            color: #aaa;
+        }
+        .search-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .search-result-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .action-buttons-container {
+            display: flex; 
+            gap: 10px; 
+            margin-top: 5px;
+        }
+        .search-result-btn {
+            padding: 8px 16px;
+            background-color: #0078d4;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .search-result-btn:hover {
+            background-color: #005a9e;
+        }
+        .btn-copy {
+            background-color: #555;
+        }
+        .btn-copy:hover {
+            background-color: #333;
+        }
+        .dark-mode .btn-copy {
+            background-color: #444;
+        }
+        .dark-mode .btn-copy:hover {
+            background-color: #666;
+        }
+        .btn-green {
+            background-color: #107c41;
+        }
+        .btn-green:hover {
+            background-color: #0b5a2f;
+        }
+
         #search-container {
             margin-bottom: 20px;
         }
@@ -50,6 +136,7 @@
             border-color: #0078d4;
             outline: none;
         }
+        
         .desc {
             margin: 10px 0;
             padding: 15px;
@@ -59,28 +146,26 @@
             font-size: 16px;
             color: #555;
             display: none;
+            line-height: 1.5;
         }
         .desc a {
             color: #0078d4;
             text-decoration: underline;
         }
-        #download {
-            text-align: center;
-            margin-top: 20px;
+        
+        .usb-desc-text {
+            margin-top: 12px; 
+            font-size: 14px; 
+            color: #555; 
+            line-height: 1.5;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
         }
-        #download a {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #0078d4;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: background-color 0.3s;
+        .dark-mode .usb-desc-text {
+            color: #bbb;
+            border-top-color: #444;
         }
-        #download a:hover {
-            background-color: #005a9e;
-        }
+
         #theme-toggle {
             position: fixed;
             top: 20px;
@@ -92,12 +177,23 @@
             width: 48px;
             height: 48px;
             cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 18px;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
         #theme-toggle:hover {
             background-color: #005a9e;
+            transform: scale(1.05);
         }
+        #theme-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
         .dark-mode {
             background-color: #1e1e1e;
             color: #d4d4d4;
@@ -119,25 +215,6 @@
         .dark-mode h1 {
             color: #4db2ff;
         }
-        .dark-mode #theme-toggle::before {
-            content: '☀';
-        }
-        #theme-toggle::before {
-            content: '☾';
-        }
-        
-        .usb-suggestion {
-            margin-top: 10px;
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
-        }
-        .usb-suggestion #download {
-            margin-top: 5px; 
-            margin-bottom: 10px;
-        }
-        .dark-mode .usb-suggestion {
-            border-top-color: #444;
-        }
         
         #no-results {
             text-align: center;
@@ -150,11 +227,204 @@
 </head>
 <body>
     <h1>Windows & Office Selector by DarkTemplar9530</h1>
-    <button id="theme-toggle"></button>
+    <button id="theme-toggle" aria-label="Переключить тему" title="Светлая/Темная тема">
+        <svg id="icon-sun" viewBox="0 0 2122 2122" style="enable-background:new 0 0 2122 2122;" xml:space="preserve">
+<path style="fill:#FAB74B;" d="M663.186,663.185c58.311-58.31,81.411-129.75-4.913-216.075
+	c-86.325-86.325-249.387-154.846-307.698-96.536c-58.31,58.311,10.211,221.372,96.536,307.698
+	C533.436,744.597,604.875,721.496,663.186,663.185z"/>
+<path style="fill:#FAB74B;" d="M1770.745,1770.745c58.311-58.311-10.211-221.372-96.536-307.698
+	c-86.325-86.325-157.764-63.224-216.075-4.913c-58.31,58.31-81.411,129.75,4.914,216.075
+	C1549.372,1760.534,1712.434,1829.055,1770.745,1770.745z"/>
+<path style="fill:#FAB74B;" d="M498.547,1060.66c0-82.464-34.18-149.314-156.262-149.314S56.448,978.196,56.448,1060.66
+	c0,82.464,163.754,149.314,285.836,149.314S498.547,1143.124,498.547,1060.66z"/>
+<path style="fill:#FAB74B;" d="M1779.035,911.346c-122.082,0-156.262,66.85-156.262,149.314c0,82.464,34.18,149.314,156.262,149.314
+	c122.083,0,285.836-66.85,285.836-149.314C2064.872,978.196,1901.118,911.346,1779.035,911.346z"/>
+<path style="fill:#FAB74B;" d="M447.111,1463.047c-86.325,86.325-154.846,249.387-96.536,307.698
+	c58.311,58.31,221.372-10.211,307.698-96.536c86.325-86.325,63.224-157.765,4.913-216.075
+	C604.875,1399.823,533.436,1376.723,447.111,1463.047z"/>
+<path style="fill:#FAB74B;" d="M1458.134,663.185c58.311,58.311,129.75,81.412,216.075-4.913s154.846-249.387,96.536-307.698
+	c-58.31-58.31-221.372,10.211-307.697,96.536C1376.723,533.436,1399.824,604.875,1458.134,663.185z"/>
+<path style="fill:#FAB74B;" d="M1557.574,1060.66c0-1.313-0.007-2.625-0.017-3.936l-0.011-1.138c-0.01-0.99-0.023-1.979-0.038-2.967
+	l-0.017-1.054c-0.023-1.3-0.051-2.599-0.084-3.896l-0.017-0.603c-0.03-1.111-0.063-2.221-0.101-3.331l-0.04-1.162
+	c-0.037-1.03-0.077-2.06-0.12-3.089l-0.035-0.855c-0.057-1.301-0.119-2.601-0.186-3.899l-0.044-0.818
+	c-0.055-1.032-0.113-2.063-0.174-3.092l-0.069-1.154c-0.073-1.187-0.15-2.373-0.231-3.558l-0.019-0.276
+	c-0.092-1.332-0.191-2.663-0.293-3.992l-0.063-0.795c-0.084-1.065-0.172-2.128-0.262-3.191l-0.081-0.949
+	c-0.228-2.62-0.477-5.233-0.746-7.841l-0.088-0.842c-0.115-1.094-0.233-2.187-0.355-3.279l-0.078-0.698
+	c-0.151-1.336-0.306-2.67-0.468-4.003l-0.011-0.093c-0.154-1.274-0.315-2.544-0.479-3.815l-0.097-0.748
+	c-0.157-1.205-0.319-2.409-0.485-3.61l-0.042-0.3c-0.19-1.37-0.386-2.737-0.587-4.104l-0.019-0.126
+	c-0.187-1.268-0.38-2.534-0.577-3.798l-0.091-0.584c-0.424-2.7-0.868-5.393-1.335-8.078l-0.014-0.083
+	c-0.229-1.315-0.463-2.626-0.701-3.936l-0.054-0.299c-0.498-2.726-1.019-5.443-1.562-8.153l-0.015-0.074
+	c-0.209-1.042-0.422-2.083-0.638-3.123l-0.17-0.81c-0.165-0.79-0.332-1.579-0.5-2.367l-0.188-0.872
+	c-0.193-0.894-0.389-1.788-0.587-2.681l-0.085-0.386c-0.478-2.148-0.971-4.291-1.477-6.429l-0.117-0.492
+	c-0.227-0.956-0.457-1.911-0.69-2.864l-0.076-0.313c-0.801-3.271-1.634-6.529-2.5-9.774l-0.053-0.2
+	c-56.646-212.135-250.138-368.383-480.127-368.383c-274.438,0-496.914,222.476-496.914,496.914
+	c0,210.253,130.582,390.004,315.069,462.584l0.135,0.053c2.858,1.123,5.729,2.222,8.614,3.293l0.082,0.031
+	c0.901,0.335,1.804,0.667,2.707,0.996l0.3,0.109c0.906,0.33,1.814,0.658,2.723,0.983l0.083,0.03c1.903,0.68,3.812,1.348,5.726,2.006
+	l0.405,0.138c0.789,0.271,1.58,0.539,2.37,0.805l0.59,0.198c0.783,0.263,1.566,0.523,2.351,0.782l0.459,0.152
+	c1.849,0.608,3.703,1.205,5.561,1.791l0.804,0.252c0.659,0.207,1.319,0.412,1.978,0.616l0.9,0.277
+	c0.675,0.207,1.352,0.414,2.028,0.618l0.727,0.22c0.93,0.28,1.861,0.557,2.793,0.832l0.1,0.03c2.676,0.787,5.36,1.552,8.054,2.294
+	l0.066,0.018c1.296,0.357,2.594,0.708,3.894,1.055l0.242,0.065c2.626,0.699,5.261,1.377,7.904,2.034l0.498,0.123
+	c1.235,0.305,2.471,0.607,3.71,0.904l0.181,0.043c2.633,0.629,5.274,1.236,7.922,1.822l0.606,0.134
+	c1.288,0.284,2.578,0.563,3.87,0.837l0.005,0.001c1.321,0.279,2.644,0.553,3.969,0.822l0.602,0.121
+	c1.126,0.227,2.252,0.45,3.381,0.67l0.675,0.132c2.602,0.502,5.212,0.985,7.827,1.447l0.744,0.131
+	c1.165,0.204,2.332,0.404,3.501,0.6l0.442,0.074c1.324,0.221,2.65,0.437,3.978,0.647l0.523,0.081c1.127,0.178,2.255,0.35,3.384,0.52
+	l0.875,0.131c1.278,0.19,2.556,0.375,3.837,0.555l0.039,0.005c1.315,0.185,2.632,0.363,3.949,0.537l0.88,0.114
+	c1.045,0.136,2.091,0.269,3.138,0.399l0.92,0.114c1.311,0.16,2.622,0.316,3.935,0.465l0.168,0.018
+	c1.228,0.139,2.458,0.273,3.69,0.404l1.024,0.107c1.105,0.115,2.21,0.226,3.316,0.334l0.622,0.061
+	c1.299,0.125,2.599,0.244,3.901,0.359l0.919,0.079c1.04,0.09,2.081,0.176,3.123,0.259l0.999,0.079
+	c1.259,0.098,2.518,0.193,3.779,0.281l0.173,0.012c1.301,0.091,2.603,0.175,3.906,0.256l1.102,0.066
+	c1.024,0.061,2.048,0.12,3.073,0.175l0.927,0.05c1.319,0.068,2.639,0.132,3.961,0.19l0.575,0.024
+	c1.122,0.048,2.245,0.092,3.37,0.133l1.156,0.04c1.077,0.036,2.156,0.069,3.235,0.099l0.756,0.021
+	c1.312,0.034,2.625,0.062,3.939,0.086l0.952,0.015c1.042,0.017,2.084,0.031,3.128,0.041l1.062,0.01
+	c1.333,0.011,2.666,0.018,4.002,0.018C1335.099,1557.574,1557.574,1335.098,1557.574,1060.66z"/>
+<path style="fill:#FAB74B;" d="M911.346,1779.036c0,122.082,66.85,285.836,149.314,285.836
+	c82.464,0,149.314-163.754,149.314-285.836s-66.85-156.263-149.314-156.263C978.197,1622.773,911.346,1656.953,911.346,1779.036z"/>
+<path style="fill:#FAB74B;" d="M1209.974,342.284c0-122.082-66.85-285.836-149.314-285.836
+	c-82.463,0-149.314,163.753-149.314,285.836s66.85,156.262,149.314,156.262C1143.124,498.546,1209.974,464.366,1209.974,342.284z"/>
+<path style="fill:#FCCA76;" d="M480.091,429.962c9.167,3.121,18.083,7.561,27.74,8.28c17.618,1.312,35.826-13.344,35.381-31.006
+	c-0.639-25.358-27.35-37.889-47.694-46.092c-9.252-3.73-19.114-6.901-29.254-9.215c-34.205-7.806-71.548-5.856-99.121,17.284
+	c-15.154,12.717-32.536,43.584-10.809,58.888c8.151,5.741,19.239,5.098,28.798,2.262c9.558-2.835,18.539-7.596,28.322-9.515
+	c12.561-2.464,25.509-0.079,38.085,2.303C461.162,424.974,470.821,426.806,480.091,429.962z"/>
+<path style="fill:#FCCA76;" d="M582.498,466.079c10.362-3.211,23.013-9.224,26.98-20.179c2.654-7.33,0.21-15.588-3.223-22.217
+	c-4.056-7.832-9.724-15.284-17.735-18.974c-3.138-1.446-6.531-2.264-9.942-2.815c-7.378-1.192-19.903,2.806-18.408,12.374
+	c0.652,4.169,4.423,7.22,5.043,11.402c2.12,14.299-22.376,15.575-10.218,31.535C562.159,466.611,571.274,469.557,582.498,466.079z"
+	/>
+<path style="fill:#FCCA76;" d="M1683.078,1613.489c0.719,9.657,5.16,18.573,8.28,27.74c3.156,9.271,4.989,18.93,6.811,28.552
+	c2.382,12.577,4.766,25.524,2.303,38.086c-1.918,9.783-6.679,18.764-9.515,28.322c-2.835,9.558-3.478,20.647,2.263,28.798
+	c15.304,21.728,46.171,4.345,58.887-10.809c23.139-27.573,25.089-64.916,17.284-99.121c-2.314-10.138-5.484-20.002-9.215-29.253
+	c-8.203-20.344-20.734-47.055-46.092-47.694C1696.422,1577.663,1681.766,1595.871,1683.078,1613.489z"/>
+<path style="fill:#FCCA76;" d="M1655.241,1538.822c-3.478,11.223-0.532,20.338,8.873,27.503
+	c15.96,12.158,17.236-12.337,31.535-10.218c4.183,0.62,7.234,4.391,11.402,5.043c9.569,1.496,13.566-11.029,12.374-18.408
+	c-0.552-3.41-1.37-6.803-2.815-9.942c-3.69-8.01-11.143-13.678-18.975-17.735c-6.628-3.432-14.887-5.876-22.216-3.223
+	C1664.464,1515.809,1658.452,1528.46,1655.241,1538.822z"/>
+<path style="fill:#FCCA76;" d="M232.729,964.511c-18.383-17.479-46.131-7.452-66.317,1.133c-9.18,3.904-18.396,8.636-27.201,14.169
+	c-29.707,18.668-54.732,46.452-57.868,82.31c-1.723,19.708,7.812,53.825,33.997,49.283c9.823-1.704,17.209-10,21.962-18.764
+	c4.754-8.764,7.738-18.48,13.299-26.755c7.14-10.624,17.981-18.093,28.559-25.301c8.092-5.515,16.218-11.05,25.005-15.374
+	c8.688-4.275,18.134-7.44,25.471-13.76C243.021,999.924,245.532,976.685,232.729,964.511z"/>
+<path style="fill:#FCCA76;" d="M288.937,931.563c-8.406-2.67-17.684-3.931-25.958-0.877c-3.241,1.197-6.219,3.017-9.021,5.039
+	c-6.06,4.374-12.089,16.058-4.266,21.766c3.409,2.487,8.232,1.978,11.628,4.497c11.61,8.613-4.809,26.836,15.074,29.524
+	c11.716,1.584,20.245-2.778,25.721-13.173c5.056-9.597,9.751-22.795,4.81-33.346C303.619,937.934,296.052,933.823,288.937,931.563z"
+	/>
+<path style="fill:#FCCA76;" d="M2039.977,1062.124c-3.136-35.859-28.161-63.643-57.868-82.31
+	c-8.805-5.533-18.022-10.265-27.202-14.169c-20.185-8.585-47.933-18.612-66.316-1.133c-12.804,12.174-10.292,35.413,3.094,46.942
+	c7.337,6.32,16.782,9.485,25.47,13.76c8.787,4.323,16.913,9.858,25.005,15.374c10.578,7.209,21.418,14.678,28.559,25.301
+	c5.562,8.275,8.546,17.991,13.299,26.755c4.753,8.764,12.14,17.06,21.963,18.764
+	C2032.166,1115.949,2041.701,1081.831,2039.977,1062.124z"/>
+<path style="fill:#FCCA76;" d="M1867.361,935.726c-2.801-2.022-5.78-3.842-9.021-5.039c-8.274-3.055-17.552-1.794-25.958,0.877
+	c-7.114,2.26-14.682,6.371-17.988,13.43c-4.942,10.551-0.247,23.748,4.809,33.346c5.477,10.395,14.005,14.758,25.722,13.173
+	c19.883-2.689,3.464-20.911,15.074-29.524c3.396-2.519,8.219-2.01,11.628-4.497C1879.451,951.784,1873.421,940.1,1867.361,935.726z"
+	/>
+<path style="fill:#FCCA76;" d="M407.237,1578.108c-25.358,0.64-37.889,27.35-46.092,47.694c-3.73,9.252-6.901,19.115-9.215,29.253
+	c-7.806,34.206-5.856,71.548,17.283,99.121c12.717,15.154,43.584,32.536,58.888,10.809c5.741-8.151,5.098-19.24,2.262-28.798
+	c-2.836-9.558-7.596-18.539-9.515-28.322c-2.463-12.561-0.079-25.508,2.303-38.086c1.823-9.621,3.655-19.281,6.811-28.552
+	c3.121-9.166,7.561-18.083,8.281-27.74C439.555,1595.871,424.898,1577.663,407.237,1578.108z"/>
+<path style="fill:#FCCA76;" d="M445.901,1511.842c-7.33-2.653-15.588-0.209-22.217,3.223c-7.832,4.057-15.284,9.725-18.975,17.735
+	c-1.445,3.139-2.263,6.532-2.815,9.942c-1.192,7.378,2.806,19.903,12.374,18.408c4.169-0.651,7.22-4.423,11.402-5.043
+	c14.299-2.119,15.575,22.376,31.536,10.218c9.405-7.164,12.351-16.28,8.873-27.503
+	C462.868,1528.46,456.856,1515.809,445.901,1511.842z"/>
+<path style="fill:#FCCA76;" d="M1613.489,438.242c9.657-0.719,18.573-5.16,27.74-8.28c9.271-3.156,18.93-4.988,28.552-6.811
+	c12.577-2.382,25.524-4.766,38.085-2.303c9.784,1.918,18.764,6.679,28.323,9.515c9.558,2.836,20.647,3.479,28.797-2.262
+	c21.728-15.304,4.345-46.171-10.809-58.888c-27.573-23.139-64.915-25.089-99.121-17.284c-10.139,2.313-20.002,5.485-29.254,9.215
+	c-20.344,8.203-47.054,20.734-47.694,46.092C1577.663,424.898,1595.871,439.554,1613.489,438.242z"/>
+<path style="fill:#FCCA76;" d="M1538.823,466.079c11.223,3.478,20.338,0.532,27.502-8.873
+	c12.158-15.961-12.338-17.236-10.218-31.535c0.62-4.183,4.391-7.234,5.043-11.402c1.496-9.568-11.03-13.566-18.407-12.374
+	c-3.411,0.551-6.804,1.369-9.942,2.815c-8.01,3.69-13.679,11.143-17.735,18.974c-3.432,6.628-5.877,14.887-3.223,22.217
+	C1515.809,456.855,1528.46,462.868,1538.823,466.079z"/>
+<path style="fill:#F8AD34;" d="M1557.508,1052.62l-0.017-1.054c-0.023-1.3-0.051-2.599-0.084-3.896l-0.017-0.603
+	c-0.03-1.111-0.063-2.221-0.101-3.331l-0.04-1.162c-0.037-1.03-0.077-2.06-0.12-3.089l-0.035-0.855
+	c-0.057-1.301-0.119-2.601-0.186-3.899l-0.044-0.818c-0.055-1.032-0.113-2.063-0.174-3.092l-0.069-1.154
+	c-0.073-1.187-0.15-2.373-0.231-3.558l-0.019-0.276c-0.092-1.332-0.191-2.663-0.293-3.992l-0.063-0.795
+	c-0.084-1.065-0.172-2.128-0.262-3.191l-0.081-0.949c-0.229-2.62-0.477-5.233-0.746-7.841l-0.088-0.842
+	c-0.115-1.094-0.233-2.187-0.355-3.279l-0.078-0.698c-0.151-1.336-0.306-2.67-0.468-4.003l-0.011-0.093
+	c-0.154-1.274-0.315-2.544-0.479-3.815l-0.097-0.748c-0.157-1.205-0.319-2.409-0.485-3.61l-0.042-0.3
+	c-0.19-1.37-0.386-2.737-0.587-4.104l-0.019-0.126c-0.187-1.268-0.38-2.534-0.577-3.798l-0.091-0.584
+	c-0.424-2.7-0.868-5.393-1.335-8.078l-0.014-0.083c-0.229-1.315-0.463-2.626-0.701-3.936l-0.054-0.299
+	c-0.499-2.726-1.019-5.443-1.562-8.153l-0.015-0.074c-29.05-144.863-121.106-266.945-246.357-336.489
+	c37.802,70.095,59.27,150.299,59.27,235.522c0,274.438-222.476,496.914-496.914,496.914c-87.394,0-169.501-22.59-240.849-62.206
+	c62.283,115.49,168.937,203.52,297.135,241.245l0.1,0.03c2.676,0.787,5.36,1.552,8.054,2.294l0.066,0.018
+	c1.296,0.357,2.594,0.708,3.894,1.055l0.242,0.065c2.626,0.699,5.261,1.376,7.904,2.034l0.498,0.123
+	c1.235,0.305,2.471,0.607,3.71,0.904l0.181,0.043c2.633,0.629,5.274,1.236,7.922,1.822l0.606,0.134
+	c1.288,0.284,2.578,0.563,3.87,0.837l0.005,0.001c1.321,0.279,2.644,0.553,3.969,0.822l0.602,0.121
+	c1.126,0.227,2.252,0.45,3.381,0.67l0.675,0.132c2.602,0.502,5.212,0.985,7.827,1.447l0.744,0.131
+	c1.165,0.204,2.332,0.404,3.501,0.6l0.442,0.074c1.324,0.221,2.65,0.437,3.978,0.647l0.523,0.081c1.127,0.178,2.255,0.35,3.384,0.52
+	l0.875,0.131c1.278,0.19,2.556,0.375,3.837,0.555l0.039,0.005c1.315,0.185,2.632,0.363,3.949,0.537l0.88,0.114
+	c1.045,0.136,2.091,0.269,3.138,0.399l0.92,0.114c1.311,0.16,2.622,0.316,3.935,0.465l0.168,0.018
+	c1.228,0.139,2.458,0.273,3.69,0.404l1.024,0.107c1.105,0.115,2.21,0.226,3.316,0.334l0.622,0.061
+	c1.299,0.125,2.599,0.244,3.901,0.359l0.919,0.079c1.04,0.09,2.081,0.176,3.123,0.259l0.999,0.079
+	c1.259,0.098,2.518,0.193,3.779,0.281l0.173,0.012c1.301,0.091,2.603,0.175,3.906,0.256l1.102,0.066
+	c1.024,0.061,2.048,0.12,3.073,0.175l0.927,0.05c1.319,0.068,2.639,0.132,3.961,0.19l0.575,0.024
+	c1.122,0.048,2.245,0.092,3.37,0.133l1.156,0.04c1.077,0.036,2.156,0.069,3.235,0.099l0.756,0.021
+	c1.312,0.034,2.625,0.062,3.939,0.086l0.952,0.015c1.042,0.017,2.084,0.031,3.128,0.041l1.062,0.01
+	c1.333,0.011,2.667,0.018,4.002,0.018c274.439,0,496.914-222.476,496.914-496.914c0-1.313-0.007-2.625-0.017-3.936l-0.011-1.138
+	C1557.536,1054.597,1557.524,1053.608,1557.508,1052.62z"/>
+<path style="fill:#FCCA76;" d="M780.71,973.099c17.2-15.77,27.446-37.478,40.136-57.061c12.833-19.805,28.378-37.685,43.866-55.49
+	c20.245-23.274,41.187-47.104,68.632-61.186c21.376-10.968,45.474-15.36,67.791-24.256c22.318-8.895,44.26-24.224,51.118-47.25
+	c18.279-61.38-60.671-93.852-108.322-95.304c-86.702-2.642-160.275,49.387-213.354,115.197
+	c-15.733,19.506-29.666,40.224-41.606,61.087c-26.257,45.878-58.103,109.446-21.476,158.385
+	C693.005,1001.306,749.329,1001.871,780.71,973.099z"/>
+<path style="fill:#FCCA76;" d="M641.084,1155.002c23.851,14.811,56.763,7.31,81.162-2.074
+	c26.427-10.165,39.279-29.341,38.803-57.828c-0.808-48.344-49.064-14.206-66.39-44.428c-5.067-8.84-2.483-20.24-7.471-29.1
+	c-11.446-20.337-41.114-9.213-53.295,4.052c-5.632,6.132-10.832,12.744-14.613,20.162c-9.652,18.937-9.259,41.495-5.247,62.368
+	C617.427,1125.818,625.125,1145.091,641.084,1155.002z"/>
+<path style="fill:#FCCA76;" d="M1092.644,1984.018c-8.764-4.754-18.48-7.738-26.755-13.299
+	c-10.624-7.141-18.093-17.981-25.301-28.559c-5.516-8.092-11.05-16.218-15.374-25.005c-4.276-8.688-7.44-18.134-13.76-25.47
+	c-11.53-13.386-34.769-15.897-46.942-3.094c-17.479,18.383-7.452,46.131,1.133,66.317c3.904,9.179,8.636,18.396,14.169,27.201
+	c18.667,29.707,46.451,54.733,82.31,57.868c19.708,1.723,53.825-7.812,49.283-33.997
+	C1109.703,1996.157,1101.407,1988.771,1092.644,1984.018z"/>
+<path style="fill:#FCCA76;" d="M957.492,1871.627c2.487-3.409,1.978-8.232,4.497-11.628c8.612-11.61,26.835,4.809,29.524-15.074
+	c1.584-11.716-2.778-20.245-13.173-25.721c-9.598-5.056-22.795-9.751-33.346-4.81c-7.059,3.307-11.171,10.874-13.43,17.989
+	c-2.67,8.406-3.932,17.684-0.877,25.957c1.197,3.241,3.018,6.219,5.04,9.021C940.1,1873.421,951.784,1879.451,957.492,1871.627z"/>
+<path style="fill:#FCCA76;" d="M1011.454,229.635c6.32-7.337,9.484-16.782,13.76-25.471c4.323-8.786,9.858-16.912,15.374-25.004
+	c7.208-10.578,14.678-21.418,25.301-28.559c8.275-5.562,17.991-8.546,26.755-13.299c8.764-4.753,17.06-12.139,18.763-21.962
+	c4.542-26.185-29.575-35.721-49.283-33.997c-35.859,3.136-63.643,28.161-82.31,57.868c-5.533,8.805-10.265,18.021-14.169,27.201
+	c-8.585,20.186-18.612,47.934-1.133,66.317C976.685,245.532,999.923,243.021,1011.454,229.635z"/>
+<path style="fill:#FCCA76;" d="M978.34,302.116c10.395-5.477,14.758-14.006,13.173-25.722c-2.689-19.883-20.912-3.463-29.524-15.074
+	c-2.519-3.396-2.01-8.22-4.497-11.628c-5.708-7.823-17.391-1.793-21.765,4.267c-2.022,2.801-3.843,5.779-5.04,9.021
+	c-3.055,8.274-1.793,17.551,0.877,25.957c2.259,7.114,6.37,14.682,13.43,17.989C955.544,311.867,968.742,307.173,978.34,302.116z"/>
+</svg>
+        <svg id="icon-moon" viewBox="0 0 2200 2200" style="enable-background:new 0 0 2200 2200;" xml:space="preserve">
+
+	<path style="fill:#F4B23D;" d="M1927.317,1054.792c-63.412,301.248-330.699,527.391-650.811,527.391
+		c-366.778,0-665.084-298.305-665.084-665.084c0-320.111,226.143-587.399,527.391-650.811c12.918-2.719,20.043,14.541,8.951,21.699
+		c-151.246,97.596-251.381,267.601-251.381,460.991c-0.001,302.903,245.342,548.245,548.244,548.245
+		c193.39,0,363.395-100.135,460.991-251.381C1912.776,1034.749,1930.036,1041.874,1927.317,1054.792z"/>
+	<path style="fill:#F4B23D;" d="M1491.855,565.276c-131.511,15.564-144.128,28.181-159.692,159.692
+		c-15.564-131.511-28.181-144.128-159.692-159.692c131.511-15.564,144.128-28.181,159.692-159.692
+		C1347.727,537.095,1360.344,549.712,1491.855,565.276z"/>
+	<path style="fill:#F4B23D;" d="M501.591,1100.75c-131.511,15.564-144.128,28.181-159.692,159.692
+		c-15.564-131.511-28.181-144.128-159.692-159.692c131.511-15.564,144.128-28.181,159.692-159.692
+		C357.463,1072.569,370.08,1085.186,501.591,1100.75z"/>
+	<path style="fill:#F4B23D;" d="M2017.793,1585.006c-131.511,15.564-144.128,28.181-159.692,159.692
+		c-15.564-131.511-28.181-144.128-159.692-159.692c131.511-15.564,144.128-28.181,159.692-159.692
+		C1873.665,1556.825,1886.282,1569.442,2017.793,1585.006z"/>
+	<path style="fill:#F4B23D;" d="M941.808,1774.308C810.297,1789.872,797.68,1802.489,782.116,1934
+		c-15.564-131.511-28.181-144.128-159.692-159.692c131.511-15.564,144.128-28.181,159.692-159.692
+		C797.68,1746.127,810.297,1758.744,941.808,1774.308z"/>
+	<path style="fill:#F4B23D;" d="M1829.098,475.982c-46.945,5.556-51.449,10.06-57.005,57.005
+		c-5.556-46.945-10.06-51.449-57.005-57.005c46.945-5.556,51.449-10.06,57.005-57.005
+		C1777.649,465.923,1782.153,470.427,1829.098,475.982z"/>
+	<path style="fill:#F4B23D;" d="M1443.35,1742.769c-46.945,5.556-51.449,10.06-57.005,57.005
+		c-5.556-46.945-10.06-51.449-57.005-57.005c46.945-5.556,51.449-10.06,57.005-57.005
+		C1391.901,1732.71,1396.405,1737.213,1443.35,1742.769z"/>
+	<path style="fill:#F4B23D;" d="M1382.612,945.37c-85.911,10.167-94.154,18.41-104.321,104.321
+		c-10.167-85.911-18.41-94.154-104.321-104.321c85.911-10.167,94.154-18.41,104.321-104.321
+		C1288.459,926.961,1296.701,935.203,1382.612,945.37z"/>
+	<path style="fill:#F4B23D;" d="M1754.377,834.646c-85.911,10.167-94.154,18.41-104.321,104.321
+		c-10.167-85.911-18.41-94.154-104.321-104.321c85.911-10.167,94.154-18.41,104.321-104.321
+		C1660.224,816.237,1668.466,824.479,1754.377,834.646z"/>
+	<path style="fill:#F4B23D;" d="M595.35,612.611c-64.586,7.644-70.782,13.84-78.426,78.426
+		c-7.644-64.586-13.84-70.782-78.426-78.426c64.586-7.643,70.782-13.84,78.426-78.426
+		C524.567,598.771,530.764,604.967,595.35,612.611z"/>
+	<path style="fill:#F4B23D;" d="M679.874,1460.897c-64.586,7.644-70.782,13.84-78.426,78.426
+		c-7.644-64.586-13.84-70.782-78.426-78.426c64.586-7.644,70.782-13.84,78.426-78.426
+		C609.091,1447.058,615.288,1453.254,679.874,1460.897z"/>
+</svg>
+
+    </button>
     
     <!-- Поле поиска -->
     <div id="search-container">
-        <input type="text" id="search-input" placeholder="Поиск (например: Windows 10, Office 2016)...">
+        <input type="text" id="search-input" aria-label="Поиск по программам" placeholder="Поиск (например: Windows 10, Office 2016)...">
     </div>
 
     <div id="main"></div>
@@ -923,51 +1193,154 @@
 
         buildNext(main, data, [], true);
 
+        const searchAliases = {
+            "win": "windows",
+            "winxp": "windows xp",
+            "win7": "windows 7",
+            "win8": "windows 8",
+            "win8.1": "windows 8.1",
+            "win10": "windows 10",
+            "win11": "windows 11",
+            "uup": "uup dump",
+            "rg": "rgadguard",
+            "rat": "ratiborus",
+            "64": "64-bit",
+            "x64": "64-bit",
+            "32": "32-bit",
+            "x86": "32-bit",
+            "arm": "arm64",
+            "pro": "professional",
+            "ent": "enterprise",
+            "vl": "volume",
+            "of": "office",
+            "офис": "office"
+        };
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function highlightText(text, tokens) {
+            let result = text;
+            tokens.forEach(token => {
+                if (token.length < 2) return; 
+                const regex = new RegExp(`(${escapeRegExp(token)})`, 'gi');
+            });
+            return result;
+        }
+
+        let searchTimeout;
+
         searchInput.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase().trim();
-            main.innerHTML = '';
-            noResults.style.display = 'none';
+            clearTimeout(searchTimeout);
+            const rawQuery = e.target.value.toLowerCase().trim();
+            
+            searchTimeout = setTimeout(() => {
+                main.innerHTML = '';
+                noResults.style.display = 'none';
 
-            if (!query) {
-                buildNext(main, data, [], true);
-                return;
-            }
+                if (!rawQuery) {
+                    buildNext(main, data, [], true);
+                    return;
+                }
 
-            const filteredData = filterObject(data, query);
+                const tokens = rawQuery.split(/\s+/).map(token => {
+                    return searchAliases[token] || token;
+                });
 
-            if (filteredData && Object.keys(filteredData).length > 0) {
-                buildNext(main, filteredData, [], true);
-            } else {
-                noResults.style.display = 'block';
-            }
+                const tokenRegexes = tokens.map(token => {
+                    return new RegExp('(^|[\\s\\[\\]\\(\\)\\-_,])' + escapeRegExp(token), 'i');
+                });
+
+                const results = [];
+
+                function searchTree(obj, currentPath) {
+                    for (const key in obj) {
+                        const value = obj[key];
+                        const newPath = [...currentPath, key];
+
+                        if (typeof value === 'string') {
+                            const fullPathString = newPath.join(' ').toLowerCase();
+                            const isMatch = tokenRegexes.every(regex => regex.test(fullPathString));
+
+                            if (isMatch) {
+                                results.push({
+                                    path: newPath,
+                                    url: value
+                                });
+                            }
+                        } else {
+                            searchTree(value, newPath);
+                        }
+                    }
+                }
+
+                searchTree(data, []);
+
+                if (results.length > 0) {
+                    results.forEach(res => {
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        
+                        const breadcrumbs = res.path.slice(0, -1).join(' ➔ ');
+                        const fileName = res.path[res.path.length - 1];
+
+                        const highlightedBreadcrumbs = highlightText(breadcrumbs, tokens);
+                        const highlightedFileName = highlightText(fileName, tokens);
+
+                        item.innerHTML = `
+                            <div class="search-result-path">${highlightedBreadcrumbs}</div>
+                            <div class="search-result-header">
+                                <span class="search-result-title">${highlightedFileName}</span>
+                                <div class="action-buttons-container">
+                                    <button class="search-result-btn btn-copy" 
+                                        onclick="navigator.clipboard.writeText('${res.url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
+                                        Скопировать ссылку
+                                    </button>
+                                    <a href="${res.url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
+                                </div>
+                            </div>
+                        `;
+                        main.appendChild(item);
+                    });
+                } else {
+                    noResults.style.display = 'block';
+                }
+            }, 250);
         });
 
-        function filterObject(obj, query) {
-            if (typeof obj !== 'object' || obj === null) return null;
-
-            const result = {};
-            let hasMatch = false;
-
-            for (const key in obj) {
-                if (key.toLowerCase().includes(query)) {
-                    result[key] = obj[key];
-                    hasMatch = true;
-                    continue;
-                }
-
-                const child = obj[key];
-                
-                if (typeof child === 'string') continue; 
-
-                const filteredChild = filterObject(child, query);
-                
-                if (filteredChild && Object.keys(filteredChild).length > 0) {
-                    result[key] = filteredChild;
-                    hasMatch = true;
-                }
-            }
+        function createDownloadCard(title, url, hideTitle = false) {
+            const card = document.createElement('div');
+            card.className = 'search-result-item';
+            card.style.marginTop = '20px';
             
-            return hasMatch ? result : null;
+            if (hideTitle) {
+                card.innerHTML = `
+                    <div class="search-result-header" style="justify-content: center;">
+                        <div class="action-buttons-container">
+                            <button class="search-result-btn btn-copy" 
+                                onclick="navigator.clipboard.writeText('${url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
+                                Скопировать ссылку
+                            </button>
+                            <a href="${url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="search-result-header">
+                        <span class="search-result-title">${title}</span>
+                        <div class="action-buttons-container">
+                            <button class="search-result-btn btn-copy" 
+                                onclick="navigator.clipboard.writeText('${url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
+                                Скопировать ссылку
+                            </button>
+                            <a href="${url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
+                        </div>
+                    </div>
+                `;
+            }
+            return card;
         }
 
         function appendUsbSuggestion(container, path) {
@@ -994,21 +1367,24 @@
             }
 
             if (toolUrl) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'usb-suggestion';
-
-                const linkDiv = document.createElement('div');
-                linkDiv.id = 'download';
-                linkDiv.innerHTML = `<a href="${toolUrl}" target="_blank">${toolName}</a>`;
-                wrapper.appendChild(linkDiv);
-
-                const descDiv = document.createElement('div');
-                descDiv.className = 'desc';
-                descDiv.style.display = 'block';
-                descDiv.innerHTML = usbDesc;
-                wrapper.appendChild(descDiv);
-
-                container.appendChild(wrapper);
+                const card = document.createElement('div');
+                card.className = 'search-result-item';
+                card.style.marginTop = '15px';
+                card.style.borderLeft = '4px solid #107c41';
+                
+                card.innerHTML = `
+                    <div class="search-result-header">
+                        <span class="search-result-title" style="display: flex; align-items: center; gap: 8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 15C8.55 15 9 15.45 9 16C9 16.55 8.55 17 8 17C7.45 17 7 16.55 7 16C7 15.45 7.45 15 8 15M15.07 4.69L16.5 6.1L15.07 7.5L13.66 6.1L15.07 4.69M17.9 7.5L19.31 8.93L17.9 10.34L16.5 8.93L17.9 7.5M8 13C6.34 13 5 14.34 5 16C5 17.66 6.34 19 8 19C9.66 19 11 17.66 11 16C11 14.34 9.66 13 8 13M9.77 4.33L10.5 5.08L14.29 1.29C14.47 1.11 14.72 1 15 1C15.28 1 15.53 1.11 15.71 1.29L22.78 8.36L22.78 8.37C22.92 8.54 23 8.76 23 9C23 9.3 22.87 9.57 22.66 9.76L22.66 9.76L18.93 13.5L19.67 14.23L12.95 20.95C11.68 22.22 9.93 23 8 23C4.13 23 1 19.87 1 16C1 14.07 1.78 12.32 3.05 11.05L9.77 4.33M20.59 9L15 3.41L11.93 6.5L17.5 12.08L20.59 9Z" /></svg>
+                            ${toolName}
+                        </span>
+                        <div class="action-buttons-container">
+                            <a href="${toolUrl}" target="_blank" class="search-result-btn btn-green">Скачать утилиту</a>
+                        </div>
+                    </div>
+                    <div class="usb-desc-text">${usbDesc}</div>
+                `;
+                container.appendChild(card);
             }
         }
 
@@ -1016,11 +1392,8 @@
             if (!currentObj) return;
 
             if (typeof currentObj === 'string') {
-                const downloadDiv = document.createElement('div');
-                downloadDiv.id = 'download';
-                downloadDiv.innerHTML = `<a href="${currentObj}" target="_blank">Скачать / Перейти</a>`;
-                container.appendChild(downloadDiv);
-                
+                const title = path.length > 0 ? path[path.length - 1] : "Перейти по ссылке";
+                container.appendChild(createDownloadCard(title, currentObj, true));
                 appendUsbSuggestion(container, path);
                 return;
             }
@@ -1034,11 +1407,8 @@
                 if (keys.length === 1) {
                     const fileName = keys[0];
                     const url = currentObj[fileName];
-                    const downloadDiv = document.createElement('div');
-                    downloadDiv.id = 'download';
-                    downloadDiv.innerHTML = `<a href="${url}" target="_blank">Скачать ${fileName}</a>`;
-                    container.appendChild(downloadDiv);
                     
+                    container.appendChild(createDownloadCard(fileName, url));
                     appendUsbSuggestion(container, path);
                     return;
                 }
@@ -1047,21 +1417,16 @@
                 select.innerHTML = '<option value="">Выберите файл</option>' + keys.map(k => `<option value="${k}">${k}</option>`).join('');
                 container.appendChild(select);
                 
-                const downloadDiv = document.createElement('div');
-                downloadDiv.id = 'download';
-                container.appendChild(downloadDiv);
-                
-                const usbContainer = document.createElement('div');
-                container.appendChild(usbContainer);
+                const resultContainer = document.createElement('div');
+                container.appendChild(resultContainer);
                 
                 select.onchange = function() {
                     const val = this.value;
-                    downloadDiv.innerHTML = '';
-                    usbContainer.innerHTML = '';
+                    resultContainer.innerHTML = '';
                     if (val) {
                         const url = currentObj[val];
-                        downloadDiv.innerHTML = `<a href="${url}" target="_blank">Скачать</a>`;
-                        appendUsbSuggestion(usbContainer, path);
+                        resultContainer.appendChild(createDownloadCard(val, url, true));
+                        appendUsbSuggestion(resultContainer, path);
                     }
                 };
                 return;
@@ -1123,13 +1488,21 @@
         const storedTheme = localStorage.getItem('theme');
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+        function updateThemeIcon() {
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('icon-sun').style.display = isDark ? 'block' : 'none';
+            document.getElementById('icon-moon').style.display = isDark ? 'none' : 'block';
+        }
+
         if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
             document.body.classList.add('dark-mode');
         }
+        updateThemeIcon();
 
         toggleButton.onclick = function() {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            updateThemeIcon();
         };
     </script>
 </body>
