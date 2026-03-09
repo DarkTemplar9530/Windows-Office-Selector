@@ -1,12 +1,12 @@
 // script.js
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Глобальные константы и данные ---
+    // --- Конфигурация и данные ---
     const sourceDescs = {
         "Оригинальные образы Windows (MSDN & VLSC)": "Самые последние официальные, оригинальные сборки, созданные Microsoft. Сборки MSDN обновляются каждый 3-й вторник месяца, VLSC – каждый 4-й понедельник месяца.",
         "Windows by UUP dump": "Скрипт, позволяющий скачивать оригинальные файлы с серверов обновления Windows и преобразовывать их в готовый (.iso) образ. Здесь представлены уже готовые образы. Обновления выходят каждый 2-й вторник месяца (Вторник патчей), также иногда выпускаются внеплановые накопительные обновления после Вторника патчей, которые не интегрируются в оригинальные образы от Microsoft, хоть и выходят позже. Cписок редакций в образе значительно больше. Это точно такие же оригинальные образы, просто собранные по-другому.",
         "Windows by rgadguard": "Сборки на основе оригинальных образов MSDN с последующей интеграцией последних обновлений. В них нет никаких косметических изменений и ничего не вырезано. Системы не были в режиме аудита. Присутствует самое большое количество редакций в одном .iso образе. В Windows 11 уже отключены проверки: TPM, Security boot, CPU, Storage и RAM-память. В Windows 10 & 11 также отключён автоматический BitLocker.",
         "Windows by NTDEV + tiny11builder & nano11builder": "Облегчённые сборки, не имеющие никакого отношения к оригинальным. Добавлены исключительно ради тестирования и веселья (ну, кому как). Ни в коем случае не устанавливать в качестве основной системы!",
-        "Запись образа Windows на USB-накопитель": "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено нескольких вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.",
+        "Запись образа Windows на USB-накопитель": "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено несколько вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.",
         "Чистая установка Windows 10 и 11": "1) Зачем это нужно? autounattend.xml или Файл ответов позволяет устанавливать Windows в полуавтоматическом режиме. Подробнее: <a href='https://schneegans.de/windows/unattend-generator' target='_blank' rel='noopener noreferrer'>schneegans.de</a>",
         "Ratiborus с автообновлениями (Рекомендуется)": "Утилиты для автоматической загрузки, установки и активации Office. Позволяют гибко настроить компоненты (Word, Excel и т.д.) и редакцию перед установкой. В чём разница? <b>Volume</b> – для корпораций. Только обновления безопасности. <b>Retail</b> – для частных лиц. Включает и обновления безопасности, и новые функции.",
         "Office by rgadguard": "Готовые iso образы Office с интегрированными последними обновлениями. В чём разница? <b>Volume</b> – для корпораций. <b>Retail</b> – для частных лиц."
@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const editionDesc = "Если нужна редакция «Домашняя (Home / HSL)», то выбираем «Consumer Edition», если – «Корпоративная (Enterprise)» – «Business Edition». Для редакции «Профессиональная (Pro)» разницы как таковой нет. В любом случае, проблем с активацией не будет ни у одной из сборок.";
     const usbDesc = "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Rufus – самая простая программа, рекомендуется для разовой записи. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов.";
 
-    // --- 1. Глобальные переменные для DOM ---
     const main = document.getElementById('main');
     const searchInput = document.getElementById('search-input');
     const noResults = document.getElementById('no-results');
@@ -25,10 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
         initSearch(main, searchInput, noResults, data);
     }
 
-    // Пробуем загрузить файл
+    // Пробуем загрузить файл. Если не загрузится, будет ошибка 404 в консоли — это нормально для локального запуска, но будет работать с GitHub Pages.
     fetch('data.json')
         .then(response => {
-            if (!response.ok) throw new Error('Файл data.json не найден, используем демо-режим');
+            if (!response.ok) {
+                throw new Error('Файл data.json не найден. Убедитесь, что он находится в корне репозитория.');
+            }
             return response.json();
         })
         .then(data => {
@@ -36,36 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
             initApp(data);
         })
         .catch(err => {
-            console.warn("Ошибка загрузки data.json (используется демо-режим):", err);
-            // Демо-данные на случай проблем с сетью
-            const demoData = {
-                "Windows": {
-                    "Windows 11": {
-                        "24H2": {
-                            "64-bit": {
-                                "Windows 11 24H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/T7Ws4_w7GeGpaw"
-                            }
-                        }
-                    },
-                    "Windows 10 22H2": {
-                        "64-bit": {
-                            "Windows 10 22H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/uevi48MMz57RWA"
-                        }
-                    }
-                },
-                "Office": {
-                    "Ratiborus с автообновлениями (Рекомендуется)": {
-                        "Office Installer+": "https://disk.yandex.ru/d/blcb37yzdscGcw"
-                    }
-                },
-                "Активировать Windows и/или Office": {
-                    "Microsoft Activation Scripts (MAS)": "https://disk.yandex.ru/d/4bT-qC8MkT5h6w"
-                }
-            };
-            initApp(demoData);
+            console.error("КРИТИЧЕСКАЯ ОШИБКА: data.json не загружен. Поиск невозможен.", err);
+            main.innerHTML = `<p style="color: red; text-align: center; font-size: 18px;">Ошибка загрузки данных.<br>Убедитесь, что файл <code>data.json</code> находится в корне репозитория рядом с <code>index.html</code>.</p>`;
         });
 
-    // --- 2. Глобальная функция экранирования HTML (критически важна!) ---
+    // --- 1. Глобальная функция экранирования HTML (критически важна!) ---
     function escapeHtml(unsafe) {
         return unsafe
              .replace(/&/g, "&amp;")
@@ -119,8 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     return searchAliases[token] || token;
                 });
 
+                // --- ИСПРАВЛЕННАЯ ЧАСТЬ: Создаём регулярки для каждого ключа ---
+                // Теперь мы будем искать каждый токен в каждом узле, где возвращаемся
                 const tokenRegexes = tokens.map(token => {
-                    return new RegExp('(^|[\\s\\[\\]\\(\\)\\-_,])' + escapeRegExp(token), 'i');
+                    return new RegExp(escapeRegExp(token), 'i');
                 });
 
                 const results = [];
@@ -131,8 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const newPath = [...currentPath, key];
 
                         if (typeof value === 'string') {
-                            const fullPathString = newPath.join(' ').toLowerCase();
-                            const isMatch = tokenRegexes.every(regex => regex.test(fullPathString));
+                            // Ищем только в полном пути к конечному узлу
+                            const pathString = newPath.join(' ');
+                            // Проверяем, что ВСЕ токены присутствуют в пути
+                            const isMatch = tokenRegexes.every(regex => regex.test(pathString));
 
                             if (isMatch) {
                                 results.push({
@@ -155,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     noResultsElem.style.display = 'block';
                 }
-            }, 250);
+            }, 200); // Уменьшенный таймаут для отзывчивости
         });
     }
 
@@ -302,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const wrapper = document.createElement('div');
-
         const select = document.createElement('select');
         let defaultOptionText = "Выберите";
         if (isRoot) defaultOptionText = "Выберите, что хотите скачать или сделать";
