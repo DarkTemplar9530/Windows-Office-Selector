@@ -1,6 +1,6 @@
 // script.js
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Конфигурация и данные ---
+    // --- Глобальные константы и данные ---
     const sourceDescs = {
         "Оригинальные образы Windows (MSDN & VLSC)": "Самые последние официальные, оригинальные сборки, созданные Microsoft. Сборки MSDN обновляются каждый 3-й вторник месяца, VLSC – каждый 4-й понедельник месяца.",
         "Windows by UUP dump": "Скрипт, позволяющий скачивать оригинальные файлы с серверов обновления Windows и преобразовывать их в готовый (.iso) образ. Здесь представлены уже готовые образы. Обновления выходят каждый 2-й вторник месяца (Вторник патчей), также иногда выпускаются внеплановые накопительные обновления после Вторника патчей, которые не интегрируются в оригинальные образы от Microsoft, хоть и выходят позже. Cписок редакций в образе значительно больше. Это точно такие же оригинальные образы, просто собранные по-другому.",
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const editionDesc = "Если нужна редакция «Домашняя (Home / HSL)», то выбираем «Consumer Edition», если – «Корпоративная (Enterprise)» – «Business Edition». Для редакции «Профессиональная (Pro)» разницы как таковой нет. В любом случае, проблем с активацией не будет ни у одной из сборок.";
     const usbDesc = "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Rufus – самая простая программа, рекомендуется для разовой записи. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов.";
 
-    // --- 1. Загрузка данных из JSON (используем демо-данные, если data.json не загрузится) ---
+    // --- 1. Глобальные переменные для DOM ---
     const main = document.getElementById('main');
     const searchInput = document.getElementById('search-input');
     const noResults = document.getElementById('no-results');
@@ -65,6 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
             initApp(demoData);
         });
 
+    // --- 2. Глобальная функция экранирования HTML (критически важна!) ---
+    function escapeHtml(unsafe) {
+        return unsafe
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+    }
+
     // --- 2. Логика поиска ---
     function initSearch(container, inputElem, noResultsElem, dataObj) {
         const searchAliases = {
@@ -88,15 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 result = result.replace(regex, '<span style="background-color: #fff6c5; font-weight: bold;">$1</span>');
             });
             return result;
-        }
-
-        function escapeHtml(unsafe) {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
         }
 
         let searchTimeout;
@@ -173,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="search-result-header">
                 <span class="search-result-title">${highlightedFileName}</span>
                 <div class="action-buttons-container">
-                    <button class="search-result-btn btn-copy" data-url="${res.url}">Скопировать ссылку</button>
+                    <button class="search-result-btn btn-copy" data-url="${escapeHtml(res.url)}">Скопировать ссылку</button>
                     <a href="${escapeHtml(res.url)}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
                 </div>
             </div>
@@ -220,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${toolName}
                     </span>
                     <div class="action-buttons-container">
-                        <a href="${toolUrl}" target="_blank" class="search-result-btn btn-green">Скачать утилиту</a>
+                        <a href="${escapeHtml(toolUrl)}" target="_blank" class="search-result-btn btn-green">Скачать утилиту</a>
                     </div>
                 </div>
                 <div class="usb-desc-text">${usbDesc}</div>
@@ -234,20 +235,11 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'search-result-item';
         card.style.marginTop = '20px';
 
-        const escapeHtml = (unsafe) => {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        };
-
         if (hideTitle) {
             card.innerHTML = `
                 <div class="search-result-header" style="justify-content: center;">
                     <div class="action-buttons-container">
-                        <button class="search-result-btn btn-copy" data-url="${url}">Скопировать ссылку</button>
+                        <button class="search-result-btn btn-copy" data-url="${escapeHtml(url)}">Скопировать ссылку</button>
                         <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="search-result-btn">Скачать / Перейти</a>
                     </div>
                 </div>
@@ -257,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="search-result-header">
                     <span class="search-result-title">${title}</span>
                     <div class="action-buttons-container">
-                        <button class="search-result-btn btn-copy" data-url="${url}">Скопировать ссылку</button>
+                        <button class="search-result-btn btn-copy" data-url="${escapeHtml(url)}">Скопировать ссылку</button>
                         <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="search-result-btn">Скачать / Перейти</a>
                     </div>
                 </div>
@@ -268,15 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function buildNext(container, currentObj, path, isRoot = false) {
         if (!currentObj) return;
-
-        const escapeHtml = (unsafe) => {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        };
 
         if (typeof currentObj === 'string') {
             const title = path.length > 0 ? path[path.length - 1] : "Перейти по ссылке";
@@ -319,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const wrapper = document.createElement('div');
+
         const select = document.createElement('select');
         let defaultOptionText = "Выберите";
         if (isRoot) defaultOptionText = "Выберите, что хотите скачать или сделать";
