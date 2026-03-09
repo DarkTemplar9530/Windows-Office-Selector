@@ -52,6 +52,7 @@
         .dark-mode .search-result-path {
             color: #aaa;
         }
+        
         .search-result-header {
             display: flex;
             justify-content: space-between;
@@ -62,13 +63,20 @@
         .search-result-title {
             font-weight: bold;
             font-size: 16px;
+            flex: 1 1 0%;
+            min-width: 200px;
+            line-height: 1.4;
         }
         
         .action-buttons-container {
             display: flex; 
             gap: 10px; 
-            margin-top: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-left: auto;
         }
+
         .search-result-btn {
             padding: 8px 16px;
             background-color: #0078d4;
@@ -223,6 +231,46 @@
             margin-top: 20px;
             display: none;
         }
+
+        #favorites-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #FAB74B;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.3s, transform 0.2s;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .favorite-btn.active {
+            color: #FAB74B;
+        }
+
+        .dark-mode .favorite-btn {
+            color: #555;
+        }
+        .dark-mode .favorite-btn.active {
+            color: #F4B23D;
+        }
     </style>
 </head>
 <body>
@@ -278,6 +326,11 @@
     <div id="search-container">
         <input type="text" id="search-input" aria-label="Поиск по программам" placeholder="Поиск (например: Windows 10, Office 2016)...">
     </div>
+
+    <!-- БЛОК ИЗБРАННОГО -->
+    <div id="favorites-header">⭐ Избранное</div>
+    <div id="favorites-container"></div>
+    <hr style="border: 0; border-top: 1px solid #ccc; margin: 20px 0; opacity: 0.5;" id="favorites-divider" hidden>
 
     <div id="main"></div>
     <div id="no-results">Ничего не найдено</div>
@@ -1036,12 +1089,140 @@
             "Office by rgadguard": "Готовые iso образы Office с интегрированными последними обновлениями. За основу брались оригинальные MSDN образы. У вас будет выбор между Volume и Retail версиями. В чём разница?<br><b>Volume</b> – для корпораций. Только обновления безопасности, без новых функций.<br><b>Retail</b> – для частных лиц и малого бизнеса. Включает в себя и обновления безопасности, и новые функции."
         };
         const bitnessDesc = "Разрядность или Архитектура операционной системы. Устанавливать ARM64 – только при наличии процессора на архитектуре ARM, например, от Apple или Qualcomm. 32-bit – если ОЗУ < 4 ГБ.";
-        const editionDesc = "Если нужна редакция «Домашняя (Home / HSL)», то выбираем «Consumer Edition», если – «Корпоративная (Enterprise)» – «Business Edition». Для редакции «Профессиональная (Pro)» разницы как таковой нет, но если у вас была ранее активирована Windows 10/11 Pro «Consumer Edition», то при переходе на «Business Edition» активировать Windows нужно будет заново. В любом случае, проблем с активацией не будет ни у одной из сборок. Устанавливать можно любую.";
+        const editionDesc = "Если нужна редакция «Домашняя (Home / HSL)», то выбираем «Consumer Edition», если – «Корпоративная (Enterprise)» – «Business Edition». Для редакции «Профессиональная (Pro)» разницы как таковой нет, но если у вас была ранее активирована Windows 10/11 Pro «Consumer Edition», то при переходе на «Business Edition» активировать Windows нужно будет заново. В любом случае, проблем с активацией не ক্ষমতায় ни у одной из сборок. Устанавливать можно любую.";
         const usbDesc = "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено нескольких вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.";
 
         const main = document.getElementById('main');
         const searchInput = document.getElementById('search-input');
         const noResults = document.getElementById('no-results');
+
+        let favorites = JSON.parse(localStorage.getItem('my_favorites')) || [];
+
+        function saveFavorites() {
+            localStorage.setItem('my_favorites', JSON.stringify(favorites));
+            renderFavorites();
+            updateAllStarButtons();
+        }
+
+        function toggleFavorite(title, url, pathStr) {
+            const index = favorites.findIndex(fav => fav.url === url);
+            if (index > -1) {
+                favorites.splice(index, 1); 
+            } else {
+                favorites.push({ title, url, path: pathStr }); 
+            }
+            saveFavorites();
+        }
+
+        function isFavorite(url) {
+            return favorites.some(fav => fav.url === url);
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favorites-container');
+            const header = document.getElementById('favorites-header');
+            const divider = document.getElementById('favorites-divider');
+            
+            container.innerHTML = '';
+            
+            if (favorites.length === 0) {
+                header.style.display = 'none';
+                divider.hidden = true;
+                return;
+            }
+            
+            header.style.display = 'block';
+            divider.hidden = false;
+
+            favorites.forEach(fav => {
+                const item = document.createElement('div');
+                item.className = 'search-result-item';
+                
+                const isFav = isFavorite(fav.url);
+                const starClass = isFav ? "favorite-btn active" : "favorite-btn";
+                const starIcon = isFav ? "★" : "☆";
+
+                item.innerHTML = `
+                    <div class="search-result-path">${fav.path}</div>
+                    <div class="search-result-header">
+                        <span class="search-result-title">${fav.title}</span>
+                        <div class="action-buttons-container">
+                            <button class="${starClass}" data-url="${fav.url}" title="Удалить из избранного" 
+                                onclick="toggleFavorite('${fav.title}', '${fav.url}', '${fav.path}')">${starIcon}</button>
+                            <button class="search-result-btn btn-copy" 
+                                onclick="navigator.clipboard.writeText('${fav.url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
+                                Скопировать ссылку
+                            </button>
+                            <a href="${fav.url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function updateAllStarButtons() {
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                const url = btn.getAttribute('data-url');
+                if (isFavorite(url)) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '★';
+                    btn.title = "Удалить из избранного";
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '☆';
+                    btn.title = "Добавить в избранное";
+                }
+            });
+        }
+
+        renderFavorites();
+
+        function createDownloadCard(title, url, hideTitle = false, path = []) {
+            const card = document.createElement('div');
+            card.className = 'search-result-item';
+            card.style.marginTop = '20px';
+            
+            const pathStr = path.join(' ➔ ');
+            const isFav = isFavorite(url);
+            const starClass = isFav ? "favorite-btn active" : "favorite-btn";
+            const starIcon = isFav ? "★" : "☆";
+
+            const starButtonHTML = `
+                <button class="${starClass}" data-url="${url}" title="В избранное" 
+                    onclick="toggleFavorite('${title}', '${url}', '${pathStr}')">${starIcon}</button>
+            `;
+
+            if (hideTitle) {
+                card.innerHTML = `
+                    <div class="search-result-header">
+                        <div class="action-buttons-container" style="margin: 0 auto;">
+                            ${starButtonHTML}
+                            <button class="search-result-btn btn-copy" 
+                                onclick="navigator.clipboard.writeText('${url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
+                                Скопировать ссылку
+                            </button>
+                            <a href="${url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="search-result-header">
+                        <span class="search-result-title">${title}</span>
+                        <div class="action-buttons-container">
+                            ${starButtonHTML}
+                            <button class="search-result-btn btn-copy" 
+                                onclick="navigator.clipboard.writeText('${url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
+                                Скопировать ссылку
+                            </button>
+                            <a href="${url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
+                        </div>
+                    </div>
+                `;
+            }
+            return card;
+        }
 
         buildNext(main, data, [], true);
 
@@ -1077,6 +1258,7 @@
             tokens.forEach(token => {
                 if (token.length < 2) return; 
                 const regex = new RegExp(`(${escapeRegExp(token)})`, 'gi');
+                result = result.replace(regex, '<b>$1</b>');
             });
             return result;
         }
@@ -1140,11 +1322,18 @@
                         const highlightedBreadcrumbs = highlightText(breadcrumbs, tokens);
                         const highlightedFileName = highlightText(fileName, tokens);
 
+                        const isFav = isFavorite(res.url);
+                        const starClass = isFav ? "favorite-btn active" : "favorite-btn";
+                        const starIcon = isFav ? "★" : "☆";
+
                         item.innerHTML = `
                             <div class="search-result-path">${highlightedBreadcrumbs}</div>
                             <div class="search-result-header">
                                 <span class="search-result-title">${highlightedFileName}</span>
                                 <div class="action-buttons-container">
+                                    <button class="${starClass}" data-url="${res.url}" title="В избранное" 
+                                        onclick="toggleFavorite('${fileName}', '${res.url}', '${breadcrumbs}')">${starIcon}</button>
+                                    
                                     <button class="search-result-btn btn-copy" 
                                         onclick="navigator.clipboard.writeText('${res.url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
                                         Скопировать ссылку
@@ -1160,40 +1349,6 @@
                 }
             }, 250);
         });
-
-        function createDownloadCard(title, url, hideTitle = false) {
-            const card = document.createElement('div');
-            card.className = 'search-result-item';
-            card.style.marginTop = '20px';
-            
-            if (hideTitle) {
-                card.innerHTML = `
-                    <div class="search-result-header" style="justify-content: center;">
-                        <div class="action-buttons-container">
-                            <button class="search-result-btn btn-copy" 
-                                onclick="navigator.clipboard.writeText('${url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
-                                Скопировать ссылку
-                            </button>
-                            <a href="${url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
-                        </div>
-                    </div>
-                `;
-            } else {
-                card.innerHTML = `
-                    <div class="search-result-header">
-                        <span class="search-result-title">${title}</span>
-                        <div class="action-buttons-container">
-                            <button class="search-result-btn btn-copy" 
-                                onclick="navigator.clipboard.writeText('${url}'); this.innerText='Скопировано!'; setTimeout(() => this.innerText='Скопировать ссылку', 2000);">
-                                Скопировать ссылку
-                            </button>
-                            <a href="${url}" target="_blank" class="search-result-btn">Скачать / Перейти</a>
-                        </div>
-                    </div>
-                `;
-            }
-            return card;
-        }
 
         function appendUsbSuggestion(container, path) {
             if (path[0] !== 'Windows') return;
@@ -1245,7 +1400,7 @@
 
             if (typeof currentObj === 'string') {
                 const title = path.length > 0 ? path[path.length - 1] : "Перейти по ссылке";
-                container.appendChild(createDownloadCard(title, currentObj, true));
+                container.appendChild(createDownloadCard(title, currentObj, true, path));
                 appendUsbSuggestion(container, path);
                 return;
             }
@@ -1260,7 +1415,7 @@
                     const fileName = keys[0];
                     const url = currentObj[fileName];
                     
-                    container.appendChild(createDownloadCard(fileName, url));
+                    container.appendChild(createDownloadCard(fileName, url, false, path));
                     appendUsbSuggestion(container, path);
                     return;
                 }
@@ -1277,7 +1432,7 @@
                     resultContainer.innerHTML = '';
                     if (val) {
                         const url = currentObj[val];
-                        resultContainer.appendChild(createDownloadCard(val, url, true));
+                        resultContainer.appendChild(createDownloadCard(val, url, true, [...path, val]));
                         appendUsbSuggestion(resultContainer, path);
                     }
                 };
