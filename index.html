@@ -28,6 +28,8 @@
             --btn-copy-hover: #333;
             --btn-primary-bg: #0078d4;
             --btn-primary-hover: #005a9e;
+            --btn-green-bg: #107c41;
+            --btn-green-hover: #0b5a2f;
             --hint-color: #777;
             --input-border: #ccc;
             --input-bg: white;
@@ -52,6 +54,8 @@
             --path-color: #aaa;
             --btn-copy-bg: #444;
             --btn-copy-hover: #666;
+            --btn-green-bg: #1a9653;
+            --btn-green-hover: #147a41;
             --hint-color: #aaa;
             --input-border: #444;
             --input-bg: #2d2d2d;
@@ -130,6 +134,8 @@
             flex: 1 1 0%;
             min-width: 200px;
             line-height: 1.4;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
         
         .action-buttons-container {
@@ -166,10 +172,10 @@
             background-color: var(--btn-copy-hover);
         }
         .btn-green {
-            background-color: #107c41;
+            background-color: var(--btn-green-bg);
         }
         .btn-green:hover {
-            background-color: #0b5a2f;
+            background-color: var(--btn-green-hover);
         }
 
         @media (max-width: 600px) {
@@ -247,6 +253,7 @@
         select {
             width: 100%;
             padding: 12px;
+            padding-right: 36px;
             margin: 10px 0;
             border: 1px solid var(--input-border);
             border-radius: 8px;
@@ -255,6 +262,13 @@
             font-size: 16px;
             cursor: pointer;
             transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
         }
         select:focus {
             border-color: var(--btn-primary-bg);
@@ -380,6 +394,7 @@
 <body>
     <script>
         (function() {
+            'use strict';
             try {
                 var storedTheme = localStorage.getItem('theme');
                 var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -440,9 +455,11 @@
 
     <script>
     (() => {
+        'use strict';
+
         const data = {
             "Windows": {
-                "Оригинальные образы Windows [MSDN & VLSC] (21.04.2026)": {
+                "Оригинальные образы Windows [MSDN & VLSC] (19.05.2026)": {
                     "Windows XP": {
                         "32-bit": {
                             "SP3 Professional OEM Refresh": {
@@ -763,10 +780,10 @@
                                     },
                                     "64-bit": {
                                         "Windows 10 Enterprise LTSC 2021 [64-bit] [Русский]": "https://disk.yandex.ru/d/fYv_eWK3jNicTA"
+                                    },
+                                    "ARM64": {
+                                        "Windows 10 Enterprise LTSC 2021 [ARM64] [Русский]": "https://disk.yandex.ru/d/IuiVfTer7FpmYw"
                                     }
-                                },
-                                "ARM64": {
-                                    "Windows 10 Enterprise LTSC 2021 [ARM64] [Русский]": "https://disk.yandex.ru/d/IuiVfTer7FpmYw"
                                 }
                             },
                             "IoT LTSC": {
@@ -921,7 +938,7 @@
                         }
                     }
                 },
-                "Windows by rgadguard (12.05.2026)": {
+                "Windows by rgadguard (15.05.2026)": {
                     "Windows XP SP3": {
                         "Windows XP SP3 [32-bit] [Русский]": "https://disk.yandex.ru/d/aY-VKqxlNWPAPw"
                     },
@@ -1246,13 +1263,14 @@
 
         let favorites = [];
         try {
-            favorites = JSON.parse(localStorage.getItem('my_favorites')) || [];
+            const stored = localStorage.getItem('my_favorites');
+            const parsed = stored ? JSON.parse(stored) : null;
+            favorites = Array.isArray(parsed) ? parsed : [];
         } catch (e) {
             console.error("Ошибка чтения localStorage", e);
             favorites = [];
         }
 
-        // Строгое экранирование ТОЛЬКО для результатов поиска
         function escapeAttr(str) {
             if (!str) return '';
             return String(str)
@@ -1268,13 +1286,12 @@
         }
 
         function safeUrl(url) {
-            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            if (url && /^https?:\/\//i.test(url)) {
                 return url;
             }
             return '#'; 
         }
 
-        // Безопасная подсветка для поиска
         function createSafeHighlightedHTML(text, tokens) {
             const validTokens = tokens.filter(t => t.length > 0 && t.trim() !== '');
             if (!validTokens.length) return escapeAttr(text);
@@ -1290,6 +1307,39 @@
                 }
                 return escapeAttr(part);
             }).join('');
+        }
+
+        function setSafeHTML(element, htmlString) {
+            element.innerHTML = ''; 
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
+            
+            function sanitizeAndAppend(source, target) {
+                source.childNodes.forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        target.appendChild(document.createTextNode(node.nodeValue));
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        const tagName = node.tagName.toLowerCase();
+                        if (['b', 'strong', 'br', 'span', 'i', 'p'].includes(tagName)) {
+                            const newEl = document.createElement(tagName);
+                            sanitizeAndAppend(node, newEl);
+                            target.appendChild(newEl);
+                        } else if (tagName === 'a') {
+                            const newEl = document.createElement('a');
+                            const href = node.getAttribute('href');
+                            if (href && /^https?:\/\//i.test(href)) {
+                                newEl.setAttribute('href', href);
+                                newEl.setAttribute('target', '_blank');
+                                newEl.setAttribute('rel', 'noopener noreferrer');
+                            }
+                            sanitizeAndAppend(node, newEl);
+                            target.appendChild(newEl);
+                        }
+                    }
+                });
+            }
+            
+            sanitizeAndAppend(doc.body, element);
         }
 
         function saveFavorites() {
@@ -1314,6 +1364,42 @@
 
         function isFavorite(url) {
             return favorites.some(fav => fav.url === url);
+        }
+
+        function createActionButtons(title, url, pathStr) {
+            const actions = document.createElement('div');
+            actions.className = 'action-buttons-container';
+
+            const isFav = isFavorite(url);
+            const starBtn = document.createElement('button');
+            starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
+            starBtn.setAttribute('aria-label', isFav ? "Удалить из избранного" : "Добавить в избранное");
+            starBtn.setAttribute('data-action', 'favorite');
+            starBtn.setAttribute('data-url', url);
+            starBtn.setAttribute('data-title', title);
+            starBtn.setAttribute('data-path', pathStr);
+            starBtn.title = "Изменить статус избранного";
+            starBtn.textContent = isFav ? "★" : "☆";
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'search-result-btn btn-copy';
+            copyBtn.setAttribute('aria-label', "Скопировать ссылку");
+            copyBtn.setAttribute('data-action', 'copy');
+            copyBtn.setAttribute('data-url', url);
+            copyBtn.textContent = "Скопировать ссылку";
+
+            const linkBtn = document.createElement('a');
+            linkBtn.className = 'search-result-btn';
+            linkBtn.href = safeUrl(url);
+            linkBtn.target = '_blank';
+            linkBtn.rel = 'noopener noreferrer';
+            linkBtn.textContent = "Скачать / Перейти";
+
+            actions.appendChild(starBtn);
+            actions.appendChild(copyBtn);
+            actions.appendChild(linkBtn);
+            
+            return actions;
         }
 
         function renderFavorites() {
@@ -1351,37 +1437,7 @@
                 titleSpan.textContent = fav.title;
                 header.appendChild(titleSpan);
 
-                const actions = document.createElement('div');
-                actions.className = 'action-buttons-container';
-
-                const isFav = isFavorite(fav.url);
-                const starBtn = document.createElement('button');
-                starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
-                starBtn.setAttribute('aria-label', isFav ? "Удалить из избранного" : "Добавить в избранное");
-                starBtn.setAttribute('data-action', 'favorite');
-                starBtn.setAttribute('data-url', fav.url);
-                starBtn.setAttribute('data-title', fav.title);
-                starBtn.setAttribute('data-path', fav.path);
-                starBtn.title = "Изменить статус избранного";
-                starBtn.textContent = isFav ? "★" : "☆";
-
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'search-result-btn btn-copy';
-                copyBtn.setAttribute('aria-label', "Скопировать ссылку");
-                copyBtn.setAttribute('data-action', 'copy');
-                copyBtn.setAttribute('data-url', fav.url);
-                copyBtn.textContent = "Скопировать ссылку";
-
-                const linkBtn = document.createElement('a');
-                linkBtn.className = 'search-result-btn';
-                linkBtn.href = safeUrl(fav.url);
-                linkBtn.target = '_blank';
-                linkBtn.rel = 'noopener noreferrer';
-                linkBtn.textContent = "Скачать / Перейти";
-
-                actions.appendChild(starBtn);
-                actions.appendChild(copyBtn);
-                actions.appendChild(linkBtn);
+                const actions = createActionButtons(fav.title, fav.url, fav.path);
                 header.appendChild(actions);
                 item.appendChild(header);
 
@@ -1431,42 +1487,13 @@
                 header.appendChild(titleSpan);
             }
             
-            const actions = document.createElement('div');
-            actions.className = 'action-buttons-container';
+            const pathStr = path.join(' ➔ ');
+            const actions = createActionButtons(title, url, pathStr);
             if (hideTitle) {
                 actions.style.margin = '0 auto';
                 actions.style.width = '100%';
                 actions.style.justifyContent = 'center';
             }
-            
-            const isFav = isFavorite(url);
-            const starBtn = document.createElement('button');
-            starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
-            starBtn.setAttribute('aria-label', isFav ? "Удалить из избранного" : "Добавить в избранное");
-            starBtn.setAttribute('data-action', 'favorite');
-            starBtn.setAttribute('data-url', url);
-            starBtn.setAttribute('data-title', title);
-            starBtn.setAttribute('data-path', path.join(' ➔ '));
-            starBtn.title = "Изменить статус избранного";
-            starBtn.textContent = isFav ? "★" : "☆";
-            
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'search-result-btn btn-copy';
-            copyBtn.setAttribute('aria-label', "Скопировать ссылку");
-            copyBtn.setAttribute('data-action', 'copy');
-            copyBtn.setAttribute('data-url', url);
-            copyBtn.textContent = "Скопировать ссылку";
-            
-            const linkBtn = document.createElement('a');
-            linkBtn.className = 'search-result-btn';
-            linkBtn.href = safeUrl(url);
-            linkBtn.target = '_blank';
-            linkBtn.rel = 'noopener noreferrer';
-            linkBtn.textContent = "Скачать / Перейти";
-            
-            actions.appendChild(starBtn);
-            actions.appendChild(copyBtn);
-            actions.appendChild(linkBtn);
             
             header.appendChild(actions);
             card.appendChild(header);
@@ -1545,19 +1572,21 @@
         let searchTimeout;
 
         searchInput.addEventListener('input', function(e) {
-            clearTimeout(searchTimeout);
             const rawQuery = e.target.value.toLowerCase().trim();
             
+            if (!rawQuery) {
+                clearTimeout(searchTimeout);
+                searchResultsContainer.innerHTML = '';
+                noResults.style.display = 'none';
+                main.style.display = 'block';
+                searchResultsContainer.style.display = 'none';
+                return;
+            }
+
+            clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 searchResultsContainer.innerHTML = '';
                 noResults.style.display = 'none';
-
-                if (!rawQuery) {
-                    main.style.display = 'block';
-                    searchResultsContainer.style.display = 'none';
-                    return;
-                }
-
                 main.style.display = 'none';
                 searchResultsContainer.style.display = 'block';
 
@@ -1596,35 +1625,7 @@
                         titleSpan.innerHTML = createSafeHighlightedHTML(fileName, tokens);
                         header.appendChild(titleSpan);
 
-                        const actions = document.createElement('div');
-                        actions.className = 'action-buttons-container';
-
-                        const isFav = isFavorite(res.url);
-                        const starBtn = document.createElement('button');
-                        starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
-                        starBtn.setAttribute('data-action', 'favorite');
-                        starBtn.setAttribute('data-url', res.url);
-                        starBtn.setAttribute('data-title', fileName);
-                        starBtn.setAttribute('data-path', breadcrumbs);
-                        starBtn.title = "Изменить статус избранного";
-                        starBtn.textContent = isFav ? "★" : "☆";
-
-                        const copyBtn = document.createElement('button');
-                        copyBtn.className = 'search-result-btn btn-copy';
-                        copyBtn.setAttribute('data-action', 'copy');
-                        copyBtn.setAttribute('data-url', res.url);
-                        copyBtn.textContent = "Скопировать ссылку";
-
-                        const linkBtn = document.createElement('a');
-                        linkBtn.className = 'search-result-btn';
-                        linkBtn.href = safeUrl(res.url);
-                        linkBtn.target = '_blank';
-                        linkBtn.rel = 'noopener noreferrer';
-                        linkBtn.textContent = "Скачать / Перейти";
-
-                        actions.appendChild(starBtn);
-                        actions.appendChild(copyBtn);
-                        actions.appendChild(linkBtn);
+                        const actions = createActionButtons(fileName, res.url, breadcrumbs);
                         header.appendChild(actions);
                         item.appendChild(header);
 
@@ -1664,7 +1665,7 @@
                 const card = document.createElement('div');
                 card.className = 'search-result-item';
                 card.style.marginTop = '15px';
-                card.style.borderLeft = '4px solid #107c41';
+                card.style.borderLeft = '4px solid var(--btn-green-bg)';
                 
                 const header = document.createElement('div');
                 header.className = 'search-result-header';
@@ -1673,7 +1674,7 @@
                 titleSpan.className = 'search-result-title';
                 titleSpan.style.display = 'flex';
                 titleSpan.style.alignItems = 'center';
-                titleSpan.style.justifyContent = 'center';
+                titleSpan.style.justifyContent = 'flex-start';
                 titleSpan.style.gap = '8px';
                 titleSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 15C8.55 15 9 15.45 9 16C9 16.55 8.55 17 8 17C7.45 17 7 16.55 7 16C7 15.45 7.45 15 8 15M15.07 4.69L16.5 6.1L15.07 7.5L13.66 6.1L15.07 4.69M17.9 7.5L19.31 8.93L17.9 10.34L16.5 8.93L17.9 7.5M8 13C6.34 13 5 14.34 5 16C5 17.66 6.34 19 8 19C9.66 19 11 17.66 11 16C11 14.34 9.66 13 8 13M9.77 4.33L10.5 5.08L14.29 1.29C14.47 1.11 14.72 1 15 1C15.28 1 15.53 1.11 15.71 1.29L22.78 8.36L22.78 8.37C22.92 8.54 23 8.76 23 9C23 9.3 22.87 9.57 22.66 9.76L22.66 9.76L18.93 13.5L19.67 14.23L12.95 20.95C11.68 22.22 9.93 23 8 23C4.13 23 1 19.87 1 16C1 14.07 1.78 12.32 3.05 11.05L9.77 4.33M20.59 9L15 3.41L11.93 6.5L17.5 12.08L20.59 9Z" /></svg>`;
                 titleSpan.appendChild(document.createTextNode(toolName));
@@ -1708,7 +1709,7 @@
             if (typeof currentObj === 'string') {
                 const title = path.length > 0 ? path[path.length - 1] : "Перейти по ссылке";
                 container.appendChild(createDownloadCard(title, currentObj, true, path));
-                appendUsbSuggestion(container, path);
+                appendUsbSuggestion(container, [...path, title]);
                 return;
             }
 
@@ -1723,7 +1724,7 @@
                     const url = currentObj[fileName];
                     
                     container.appendChild(createDownloadCard(fileName, url, false, path));
-                    appendUsbSuggestion(container, path);
+                    appendUsbSuggestion(container, [...path, fileName]);
                     return;
                 }
 
@@ -1753,7 +1754,7 @@
                     if (val) {
                         const url = currentObj[val];
                         resultContainer.appendChild(createDownloadCard(val, url, true, [...path, val]));
-                        appendUsbSuggestion(resultContainer, path);
+                        appendUsbSuggestion(resultContainer, [...path, val]);
                     }
                 });
                 return;
@@ -1785,12 +1786,14 @@
             const staticDescDiv = document.createElement('div');
             staticDescDiv.className = 'desc';
             
-            if (isBitness && path.length > 0 && path[0] === 'Windows') {
-                staticDescDiv.textContent = bitnessDesc;
-                staticDescDiv.style.display = 'block';
-            } else if (isEdition) {
-                staticDescDiv.textContent = editionDesc;
-                staticDescDiv.style.display = 'block';
+            if (path.length > 0 && path[0] === 'Windows') {
+                if (isBitness) {
+                    staticDescDiv.textContent = bitnessDesc;
+                    staticDescDiv.style.display = 'block';
+                } else if (isEdition) {
+                    staticDescDiv.textContent = editionDesc;
+                    staticDescDiv.style.display = 'block';
+                }
             }
             wrapper.appendChild(staticDescDiv);
             
@@ -1808,7 +1811,7 @@
                 
                 nextLevelContainer.innerHTML = '';
                 selectionDescDiv.style.display = 'none';
-                selectionDescDiv.innerHTML = ''; // Очищаем
+                selectionDescDiv.innerHTML = ''; 
 
                 if (val) {
                     let matchedDesc = null;
@@ -1820,8 +1823,7 @@
                     }
 
                     if (matchedDesc) {
-                        // Тут используем innerHTML, т.к. текст берётся из наших безопасных констант с <a> и <b>
-                        selectionDescDiv.innerHTML = matchedDesc; 
+                        setSafeHTML(selectionDescDiv, matchedDesc); 
                         selectionDescDiv.style.display = 'block';
                     }
                     
@@ -1832,15 +1834,38 @@
         
         function copyToClipboardFallback(text, onSuccess, onError) {
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(onSuccess).catch(fallback);
+                navigator.clipboard.writeText(text).then(onSuccess).catch(tryExecCommand);
             } else {
-                fallback();
+                tryExecCommand();
             }
 
-            function fallback() {
+            function tryExecCommand() {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        onSuccess();
+                    } else {
+                        showPromptFallback();
+                    }
+                } catch (err) {
+                    showPromptFallback();
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+            }
+
+            function showPromptFallback() {
                 if (text.startsWith('http')) {
                     prompt("Ваш браузер заблокировал автоматическое копирование. Скопируйте ссылку вручную:", text);
-                    // Мы не вызываем onSuccess(), т.к. не знаем, скопировал ли человек текст на самом деле
                 } else {
                     alert("Ошибка: Невозможно скопировать текст.");
                     onError();
