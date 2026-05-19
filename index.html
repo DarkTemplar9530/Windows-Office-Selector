@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="referrer" content="no-referrer">
 
     <title>Windows & Office Selector by DarkTemplar9530</title>
@@ -215,7 +215,10 @@
 
         #search-container {
             margin-bottom: 20px;
+            position: relative;
+            width: 100%;
         }
+        
         #search-input {
             width: 100%;
             padding: 12px;
@@ -230,6 +233,15 @@
         #search-input:focus {
             border-color: var(--btn-primary-bg);
             outline: none;
+        }
+        
+        #search-input::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 14px;
+            width: 14px;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23777'><path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/></svg>");
+            cursor: pointer;
         }
 
         select {
@@ -307,13 +319,36 @@
             display: none;
         }
 
+        #favorites-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
         #favorites-header {
             font-size: 1.2em;
             font-weight: bold;
             color: var(--fav-active);
-            margin-top: 20px;
-            margin-bottom: 10px;
-            display: none;
+            margin: 0;
+        }
+
+        #clear-favorites-btn {
+            background: none;
+            border: 1px solid var(--item-border);
+            color: var(--hint-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        #clear-favorites-btn:hover {
+            background: var(--item-border);
+            color: var(--text-color);
         }
 
         .favorite-btn {
@@ -343,47 +378,65 @@
     </style>
 </head>
 <body>
-    <h1>Windows & Office Selector by DarkTemplar9530</h1>
-    <button id="theme-toggle" aria-label="Переключить тему" title="Светлая/Темная тема">
-        <svg id="icon-sun" viewBox="0 0 100 100" width="28" height="28" style="display: block;">
-            <defs>
-                <linearGradient id="sun-center" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#FFDD44" />
-                    <stop offset="100%" stop-color="#FF9500" />
-                </linearGradient>
-                <linearGradient id="sun-rays" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#FFB300" />
-                    <stop offset="100%" stop-color="#FF8A00" />
-                </linearGradient>
-            </defs>
-            <g fill="url(#sun-rays)">
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z"/>
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(45 50 50)"/>
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(90 50 50)"/>
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(135 50 50)"/>
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(180 50 50)"/>
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(225 50 50)"/>
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(270 50 50)"/>
-                <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(315 50 50)"/>
-            </g>
-            <circle cx="50" cy="50" r="21" fill="url(#sun-center)" />
-        </svg>
+    <script>
+        (function() {
+            try {
+                var storedTheme = localStorage.getItem('theme');
+                var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
+                    document.body.classList.add('dark-mode');
+                }
+            } catch (e) {}
+        })();
+    </script>
 
-        <div id="icon-moon" style="font-size: 24px; line-height: 1; transform: translate(-1px, -3px); display: none;">🌙</div>        
-    </button>
+    <header>
+        <h1>Windows & Office Selector by DarkTemplar9530</h1>
+        <button id="theme-toggle" aria-label="Переключить тему" title="Светлая/Темная тема">
+            <svg id="icon-sun" viewBox="0 0 100 100" width="28" height="28" style="display: block;">
+                <defs>
+                    <linearGradient id="sun-center" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFDD44" />
+                        <stop offset="100%" stop-color="#FF9500" />
+                    </linearGradient>
+                    <linearGradient id="sun-rays" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#FFB300" />
+                        <stop offset="100%" stop-color="#FF8A00" />
+                    </linearGradient>
+                </defs>
+                <g fill="url(#sun-rays)">
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z"/>
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(45 50 50)"/>
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(90 50 50)"/>
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(135 50 50)"/>
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(180 50 50)"/>
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(225 50 50)"/>
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(270 50 50)"/>
+                    <path d="M50 4 C53 4 56 12 56 19 C56 23 44 23 44 19 C44 12 47 4 50 4 Z" transform="rotate(315 50 50)"/>
+                </g>
+                <circle cx="50" cy="50" r="21" fill="url(#sun-center)" />
+            </svg>
+            <div id="icon-moon" style="font-size: 24px; line-height: 1; transform: translate(-1px, -3px); display: none;">🌙</div>        
+        </button>
 
-    <div class="hint-text">💡 Подсказка: нажмите на звёздочку (☆) рядом с файлом, чтобы быстро сохранить его в избранное</div>
-    <div id="search-container">
-        <input type="text" id="search-input" aria-label="Поиск по программам" placeholder="Поиск (например: Windows 10, Office 2016)...">
-    </div>
+        <div class="hint-text">💡 Подсказка: нажмите на звёздочку (☆) рядом с файлом, чтобы быстро сохранить его в избранное</div>
+        <div id="search-container">
+            <input type="search" id="search-input" aria-label="Поиск по программам" placeholder="Поиск (например: Windows 10, Office 2016)..." maxlength="50">
+        </div>
+    </header>
 
-    <div id="favorites-header">⭐ Избранное</div>
-    <div id="favorites-container" aria-live="polite"></div>
-    <hr style="border: 0; border-top: 1px solid var(--item-border); margin: 20px 0; opacity: 0.5;" id="favorites-divider" hidden>
+    <main>
+        <div id="favorites-header-container">
+            <h2 id="favorites-header">⭐ Избранное</h2>
+            <button id="clear-favorites-btn" title="Очистить весь список избранного">Очистить всё</button>
+        </div>
+        <div id="favorites-container" aria-live="polite"></div>
+        <hr style="border: 0; border-top: 1px solid var(--item-border); margin: 20px 0; opacity: 0.5;" id="favorites-divider" hidden>
 
-    <div id="main"></div>
-    <div id="search-results-container" aria-live="polite"></div>
-    <div id="no-results" aria-live="polite">Ничего не найдено</div>
+        <div id="main"></div>
+        <div id="search-results-container" aria-live="polite" role="status"></div>
+        <div id="no-results" aria-live="polite">Ничего не найдено</div>
+    </main>
 
     <script>
     (() => {
@@ -711,6 +764,9 @@
                                     "64-bit": {
                                         "Windows 10 Enterprise LTSC 2021 [64-bit] [Русский]": "https://disk.yandex.ru/d/fYv_eWK3jNicTA"
                                     }
+                                },
+                                "ARM64": {
+                                    "Windows 10 Enterprise LTSC 2021 [ARM64] [Русский]": "https://disk.yandex.ru/d/IuiVfTer7FpmYw"
                                 }
                             },
                             "IoT LTSC": {
@@ -865,7 +921,7 @@
                         }
                     }
                 },
-                "Windows by rgadguard (15.05.2026)": {
+                "Windows by rgadguard (12.05.2026)": {
                     "Windows XP SP3": {
                         "Windows XP SP3 [32-bit] [Русский]": "https://disk.yandex.ru/d/aY-VKqxlNWPAPw"
                     },
@@ -1186,6 +1242,7 @@
         const searchResultsContainer = document.getElementById('search-results-container');
         const searchInput = document.getElementById('search-input');
         const noResults = document.getElementById('no-results');
+        const clearFavoritesBtn = document.getElementById('clear-favorites-btn');
 
         let favorites = [];
         try {
@@ -1195,6 +1252,7 @@
             favorites = [];
         }
 
+        // Строгое экранирование ТОЛЬКО для результатов поиска
         function escapeAttr(str) {
             if (!str) return '';
             return String(str)
@@ -1205,18 +1263,33 @@
                 .replace(/>/g, '&gt;');
         }
 
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function safeUrl(url) {
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                return url;
+            }
+            return '#'; 
+        }
+
+        // Безопасная подсветка для поиска
         function createSafeHighlightedHTML(text, tokens) {
-            const safeText = escapeAttr(text);
             const validTokens = tokens.filter(t => t.length > 0 && t.trim() !== '');
-            if (!validTokens.length) return safeText;
+            if (!validTokens.length) return escapeAttr(text);
             
             validTokens.sort((a, b) => b.length - a.length);
-            
-            const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const pattern = validTokens.map(t => escapeRegExp(escapeAttr(t))).join('|');
+            const pattern = validTokens.map(escapeRegExp).join('|');
             const regex = new RegExp(`(${pattern})`, 'gi');
             
-            return safeText.replace(regex, '<b>$1</b>');
+            const parts = text.split(regex);
+            return parts.map((part, index) => {
+                if (index % 2 === 1) { 
+                    return '<b>' + escapeAttr(part) + '</b>';
+                }
+                return escapeAttr(part);
+            }).join('');
         }
 
         function saveFavorites() {
@@ -1245,18 +1318,18 @@
 
         function renderFavorites() {
             const container = document.getElementById('favorites-container');
-            const header = document.getElementById('favorites-header');
+            const headerContainer = document.getElementById('favorites-header-container');
             const divider = document.getElementById('favorites-divider');
             
             container.innerHTML = '';
             
             if (favorites.length === 0) {
-                header.style.display = 'none';
+                headerContainer.style.display = 'none';
                 divider.hidden = true;
                 return;
             }
             
-            header.style.display = 'block';
+            headerContainer.style.display = 'flex';
             divider.hidden = false;
 
             const fragment = document.createDocumentFragment();
@@ -1265,28 +1338,64 @@
                 const item = document.createElement('div');
                 item.className = 'search-result-item';
                 
-                const isFav = isFavorite(fav.url);
-                const starClass = isFav ? "favorite-btn active" : "favorite-btn";
-                const starIcon = isFav ? "★" : "☆";
-                const ariaLabel = isFav ? "Удалить из избранного" : "Добавить в избранное";
+                const pathDiv = document.createElement('div');
+                pathDiv.className = 'search-result-path';
+                pathDiv.textContent = fav.path;
+                item.appendChild(pathDiv);
 
-                item.innerHTML = `
-                    <div class="search-result-path">${escapeAttr(fav.path)}</div>
-                    <div class="search-result-header">
-                        <span class="search-result-title">${escapeAttr(fav.title)}</span>
-                        <div class="action-buttons-container">
-                            <button class="${starClass}" aria-label="${ariaLabel}" data-action="favorite" data-url="${escapeAttr(fav.url)}" data-title="${escapeAttr(fav.title)}" data-path="${escapeAttr(fav.path)}" title="Изменить статус избранного">${starIcon}</button>
-                            <button class="search-result-btn btn-copy" aria-label="Скопировать ссылку" data-action="copy" data-url="${escapeAttr(fav.url)}">
-                                Скопировать ссылку
-                            </button>
-                            <a href="${escapeAttr(fav.url)}" target="_blank" rel="noopener noreferrer" class="search-result-btn">Скачать / Перейти</a>
-                        </div>
-                    </div>
-                `;
+                const header = document.createElement('div');
+                header.className = 'search-result-header';
+
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'search-result-title';
+                titleSpan.textContent = fav.title;
+                header.appendChild(titleSpan);
+
+                const actions = document.createElement('div');
+                actions.className = 'action-buttons-container';
+
+                const isFav = isFavorite(fav.url);
+                const starBtn = document.createElement('button');
+                starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
+                starBtn.setAttribute('aria-label', isFav ? "Удалить из избранного" : "Добавить в избранное");
+                starBtn.setAttribute('data-action', 'favorite');
+                starBtn.setAttribute('data-url', fav.url);
+                starBtn.setAttribute('data-title', fav.title);
+                starBtn.setAttribute('data-path', fav.path);
+                starBtn.title = "Изменить статус избранного";
+                starBtn.textContent = isFav ? "★" : "☆";
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'search-result-btn btn-copy';
+                copyBtn.setAttribute('aria-label', "Скопировать ссылку");
+                copyBtn.setAttribute('data-action', 'copy');
+                copyBtn.setAttribute('data-url', fav.url);
+                copyBtn.textContent = "Скопировать ссылку";
+
+                const linkBtn = document.createElement('a');
+                linkBtn.className = 'search-result-btn';
+                linkBtn.href = safeUrl(fav.url);
+                linkBtn.target = '_blank';
+                linkBtn.rel = 'noopener noreferrer';
+                linkBtn.textContent = "Скачать / Перейти";
+
+                actions.appendChild(starBtn);
+                actions.appendChild(copyBtn);
+                actions.appendChild(linkBtn);
+                header.appendChild(actions);
+                item.appendChild(header);
+
                 fragment.appendChild(item);
             });
             container.appendChild(fragment);
         }
+
+        clearFavoritesBtn.addEventListener('click', () => {
+            if (confirm('Вы уверены, что хотите удалить все сохраненные файлы из избранного?')) {
+                favorites = [];
+                saveFavorites();
+            }
+        });
 
         function updateAllStarButtons() {
             document.querySelectorAll('.favorite-btn').forEach(btn => {
@@ -1312,46 +1421,55 @@
             card.className = 'search-result-item' + (hideTitle ? ' transparent-card' : '');
             if (!hideTitle) card.style.marginTop = '20px';
             
-            const pathStr = path.join(' ➔ ');
-            const isFav = isFavorite(url);
-            const starClass = isFav ? "favorite-btn active" : "favorite-btn";
-            const starIcon = isFav ? "★" : "☆";
-            const ariaLabel = isFav ? "Удалить из избранного" : "Добавить в избранное";
-
-            const safeTitle = escapeAttr(title);
-            const safeUrl = escapeAttr(url);
-            const safePath = escapeAttr(pathStr);
-
-            const starButtonHTML = `
-                <button class="${starClass}" aria-label="${ariaLabel}" data-action="favorite" data-url="${safeUrl}" data-title="${safeTitle}" data-path="${safePath}" title="Изменить статус избранного">${starIcon}</button>
-            `;
-
-            if (hideTitle) {
-                card.innerHTML = `
-                    <div class="search-result-header">
-                        <div class="action-buttons-container" style="margin: 0 auto; width: 100%; justify-content: center;">
-                            ${starButtonHTML}
-                            <button class="search-result-btn btn-copy" aria-label="Скопировать ссылку" data-action="copy" data-url="${safeUrl}">
-                                Скопировать ссылку
-                            </button>
-                            <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="search-result-btn">Скачать / Перейти</a>
-                        </div>
-                    </div>
-                `;
-            } else {
-                card.innerHTML = `
-                    <div class="search-result-header">
-                        <span class="search-result-title">${safeTitle}</span>
-                        <div class="action-buttons-container">
-                            ${starButtonHTML}
-                            <button class="search-result-btn btn-copy" aria-label="Скопировать ссылку" data-action="copy" data-url="${safeUrl}">
-                                Скопировать ссылку
-                            </button>
-                            <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="search-result-btn">Скачать / Перейти</a>
-                        </div>
-                    </div>
-                `;
+            const header = document.createElement('div');
+            header.className = 'search-result-header';
+            
+            if (!hideTitle) {
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'search-result-title';
+                titleSpan.textContent = title;
+                header.appendChild(titleSpan);
             }
+            
+            const actions = document.createElement('div');
+            actions.className = 'action-buttons-container';
+            if (hideTitle) {
+                actions.style.margin = '0 auto';
+                actions.style.width = '100%';
+                actions.style.justifyContent = 'center';
+            }
+            
+            const isFav = isFavorite(url);
+            const starBtn = document.createElement('button');
+            starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
+            starBtn.setAttribute('aria-label', isFav ? "Удалить из избранного" : "Добавить в избранное");
+            starBtn.setAttribute('data-action', 'favorite');
+            starBtn.setAttribute('data-url', url);
+            starBtn.setAttribute('data-title', title);
+            starBtn.setAttribute('data-path', path.join(' ➔ '));
+            starBtn.title = "Изменить статус избранного";
+            starBtn.textContent = isFav ? "★" : "☆";
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'search-result-btn btn-copy';
+            copyBtn.setAttribute('aria-label', "Скопировать ссылку");
+            copyBtn.setAttribute('data-action', 'copy');
+            copyBtn.setAttribute('data-url', url);
+            copyBtn.textContent = "Скопировать ссылку";
+            
+            const linkBtn = document.createElement('a');
+            linkBtn.className = 'search-result-btn';
+            linkBtn.href = safeUrl(url);
+            linkBtn.target = '_blank';
+            linkBtn.rel = 'noopener noreferrer';
+            linkBtn.textContent = "Скачать / Перейти";
+            
+            actions.appendChild(starBtn);
+            actions.appendChild(copyBtn);
+            actions.appendChild(linkBtn);
+            
+            header.appendChild(actions);
+            card.appendChild(header);
             return card;
         }
 
@@ -1359,6 +1477,7 @@
 
         const searchAliases = {
             "win": "windows",
+            "цш": "windows",
             "цшт": "windows",
             "цштвщцы": "windows",
             "винда": "windows",
@@ -1423,8 +1542,6 @@
             "офис": "office"
         };
 
-        const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
         let searchTimeout;
 
         searchInput.addEventListener('input', function(e) {
@@ -1466,32 +1583,51 @@
                         const breadcrumbs = res.path.slice(0, -1).join(' ➔ ');
                         const fileName = res.path[res.path.length - 1];
 
-                        const highlightedBreadcrumbs = createSafeHighlightedHTML(breadcrumbs, tokens);
-                        const highlightedFileName = createSafeHighlightedHTML(fileName, tokens);
+                        const pathDiv = document.createElement('div');
+                        pathDiv.className = 'search-result-path';
+                        pathDiv.innerHTML = createSafeHighlightedHTML(breadcrumbs, tokens);
+                        item.appendChild(pathDiv);
+
+                        const header = document.createElement('div');
+                        header.className = 'search-result-header';
+
+                        const titleSpan = document.createElement('span');
+                        titleSpan.className = 'search-result-title';
+                        titleSpan.innerHTML = createSafeHighlightedHTML(fileName, tokens);
+                        header.appendChild(titleSpan);
+
+                        const actions = document.createElement('div');
+                        actions.className = 'action-buttons-container';
 
                         const isFav = isFavorite(res.url);
-                        const starClass = isFav ? "favorite-btn active" : "favorite-btn";
-                        const starIcon = isFav ? "★" : "☆";
-                        const ariaLabel = isFav ? "Удалить из избранного" : "Добавить в избранное";
+                        const starBtn = document.createElement('button');
+                        starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
+                        starBtn.setAttribute('data-action', 'favorite');
+                        starBtn.setAttribute('data-url', res.url);
+                        starBtn.setAttribute('data-title', fileName);
+                        starBtn.setAttribute('data-path', breadcrumbs);
+                        starBtn.title = "Изменить статус избранного";
+                        starBtn.textContent = isFav ? "★" : "☆";
 
-                        const safeTitle = escapeAttr(fileName);
-                        const safeUrl = escapeAttr(res.url);
-                        const safePath = escapeAttr(breadcrumbs);
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'search-result-btn btn-copy';
+                        copyBtn.setAttribute('data-action', 'copy');
+                        copyBtn.setAttribute('data-url', res.url);
+                        copyBtn.textContent = "Скопировать ссылку";
 
-                        item.innerHTML = `
-                            <div class="search-result-path">${highlightedBreadcrumbs}</div>
-                            <div class="search-result-header">
-                                <span class="search-result-title">${highlightedFileName}</span>
-                                <div class="action-buttons-container">
-                                    <button class="${starClass}" aria-label="${ariaLabel}" data-action="favorite" data-url="${safeUrl}" data-title="${safeTitle}" data-path="${safePath}" title="Изменить статус избранного">${starIcon}</button>
-                                    
-                                    <button class="search-result-btn btn-copy" aria-label="Скопировать ссылку" data-action="copy" data-url="${safeUrl}">
-                                        Скопировать ссылку
-                                    </button>
-                                    <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="search-result-btn">Скачать / Перейти</a>
-                                </div>
-                            </div>
-                        `;
+                        const linkBtn = document.createElement('a');
+                        linkBtn.className = 'search-result-btn';
+                        linkBtn.href = safeUrl(res.url);
+                        linkBtn.target = '_blank';
+                        linkBtn.rel = 'noopener noreferrer';
+                        linkBtn.textContent = "Скачать / Перейти";
+
+                        actions.appendChild(starBtn);
+                        actions.appendChild(copyBtn);
+                        actions.appendChild(linkBtn);
+                        header.appendChild(actions);
+                        item.appendChild(header);
+
                         fragment.appendChild(item);
                     });
                     searchResultsContainer.appendChild(fragment);
@@ -1530,18 +1666,38 @@
                 card.style.marginTop = '15px';
                 card.style.borderLeft = '4px solid #107c41';
                 
-                card.innerHTML = `
-                    <div class="search-result-header">
-                        <span class="search-result-title" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 15C8.55 15 9 15.45 9 16C9 16.55 8.55 17 8 17C7.45 17 7 16.55 7 16C7 15.45 7.45 15 8 15M15.07 4.69L16.5 6.1L15.07 7.5L13.66 6.1L15.07 4.69M17.9 7.5L19.31 8.93L17.9 10.34L16.5 8.93L17.9 7.5M8 13C6.34 13 5 14.34 5 16C5 17.66 6.34 19 8 19C9.66 19 11 17.66 11 16C11 14.34 9.66 13 8 13M9.77 4.33L10.5 5.08L14.29 1.29C14.47 1.11 14.72 1 15 1C15.28 1 15.53 1.11 15.71 1.29L22.78 8.36L22.78 8.37C22.92 8.54 23 8.76 23 9C23 9.3 22.87 9.57 22.66 9.76L22.66 9.76L18.93 13.5L19.67 14.23L12.95 20.95C11.68 22.22 9.93 23 8 23C4.13 23 1 19.87 1 16C1 14.07 1.78 12.32 3.05 11.05L9.77 4.33M20.59 9L15 3.41L11.93 6.5L17.5 12.08L20.59 9Z" /></svg>
-                            ${escapeAttr(toolName)}
-                        </span>
-                        <div class="action-buttons-container">
-                            <a href="${escapeAttr(toolUrl)}" target="_blank" rel="noopener noreferrer" class="search-result-btn btn-green">Скачать утилиту</a>
-                        </div>
-                    </div>
-                    <div class="usb-desc-text">${usbDesc}</div>
-                `;
+                const header = document.createElement('div');
+                header.className = 'search-result-header';
+
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'search-result-title';
+                titleSpan.style.display = 'flex';
+                titleSpan.style.alignItems = 'center';
+                titleSpan.style.justifyContent = 'center';
+                titleSpan.style.gap = '8px';
+                titleSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 15C8.55 15 9 15.45 9 16C9 16.55 8.55 17 8 17C7.45 17 7 16.55 7 16C7 15.45 7.45 15 8 15M15.07 4.69L16.5 6.1L15.07 7.5L13.66 6.1L15.07 4.69M17.9 7.5L19.31 8.93L17.9 10.34L16.5 8.93L17.9 7.5M8 13C6.34 13 5 14.34 5 16C5 17.66 6.34 19 8 19C9.66 19 11 17.66 11 16C11 14.34 9.66 13 8 13M9.77 4.33L10.5 5.08L14.29 1.29C14.47 1.11 14.72 1 15 1C15.28 1 15.53 1.11 15.71 1.29L22.78 8.36L22.78 8.37C22.92 8.54 23 8.76 23 9C23 9.3 22.87 9.57 22.66 9.76L22.66 9.76L18.93 13.5L19.67 14.23L12.95 20.95C11.68 22.22 9.93 23 8 23C4.13 23 1 19.87 1 16C1 14.07 1.78 12.32 3.05 11.05L9.77 4.33M20.59 9L15 3.41L11.93 6.5L17.5 12.08L20.59 9Z" /></svg>`;
+                titleSpan.appendChild(document.createTextNode(toolName));
+
+                const actions = document.createElement('div');
+                actions.className = 'action-buttons-container';
+
+                const linkBtn = document.createElement('a');
+                linkBtn.className = 'search-result-btn btn-green';
+                linkBtn.href = safeUrl(toolUrl);
+                linkBtn.target = '_blank';
+                linkBtn.rel = 'noopener noreferrer';
+                linkBtn.textContent = "Скачать утилиту";
+
+                actions.appendChild(linkBtn);
+                header.appendChild(titleSpan);
+                header.appendChild(actions);
+                card.appendChild(header);
+
+                const descDiv = document.createElement('div');
+                descDiv.className = 'usb-desc-text';
+                descDiv.textContent = usbDesc;
+                card.appendChild(descDiv);
+
                 container.appendChild(card);
             }
         }
@@ -1573,7 +1729,19 @@
 
                 const select = document.createElement('select');
                 select.setAttribute('aria-label', "Выберите файл");
-                select.innerHTML = '<option value="">Выберите файл</option>' + keys.map(k => `<option value="${escapeAttr(k)}">${escapeAttr(k)}</option>`).join('');
+                
+                const defOpt = document.createElement('option');
+                defOpt.value = "";
+                defOpt.textContent = "Выберите файл";
+                select.appendChild(defOpt);
+
+                keys.forEach(k => {
+                    const opt = document.createElement('option');
+                    opt.value = k;
+                    opt.textContent = k;
+                    select.appendChild(opt);
+                });
+
                 container.appendChild(select);
                 
                 const resultContainer = document.createElement('div');
@@ -1596,7 +1764,19 @@
             
             let defaultOptionText = isRoot ? "Выберите, что хотите скачать или сделать" : "Выберите";
             select.setAttribute('aria-label', defaultOptionText);
-            select.innerHTML = `<option value="">${defaultOptionText}</option>` + keys.map(k => `<option value="${escapeAttr(k)}">${escapeAttr(k)}</option>`).join('');
+            
+            const defOpt = document.createElement('option');
+            defOpt.value = "";
+            defOpt.textContent = defaultOptionText;
+            select.appendChild(defOpt);
+
+            keys.forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.textContent = k;
+                select.appendChild(opt);
+            });
+            
             wrapper.appendChild(select);
 
             const isBitness = keys.some(k => k.includes('-bit') || k === 'ARM64');
@@ -1606,10 +1786,10 @@
             staticDescDiv.className = 'desc';
             
             if (isBitness && path.length > 0 && path[0] === 'Windows') {
-                staticDescDiv.innerHTML = bitnessDesc;
+                staticDescDiv.textContent = bitnessDesc;
                 staticDescDiv.style.display = 'block';
             } else if (isEdition) {
-                staticDescDiv.innerHTML = editionDesc;
+                staticDescDiv.textContent = editionDesc;
                 staticDescDiv.style.display = 'block';
             }
             wrapper.appendChild(staticDescDiv);
@@ -1628,7 +1808,7 @@
                 
                 nextLevelContainer.innerHTML = '';
                 selectionDescDiv.style.display = 'none';
-                selectionDescDiv.innerHTML = '';
+                selectionDescDiv.innerHTML = ''; // Очищаем
 
                 if (val) {
                     let matchedDesc = null;
@@ -1640,6 +1820,7 @@
                     }
 
                     if (matchedDesc) {
+                        // Тут используем innerHTML, т.к. текст берётся из наших безопасных констант с <a> и <b>
                         selectionDescDiv.innerHTML = matchedDesc; 
                         selectionDescDiv.style.display = 'block';
                     }
@@ -1651,36 +1832,17 @@
         
         function copyToClipboardFallback(text, onSuccess, onError) {
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(onSuccess).catch(tryExecCommand);
+                navigator.clipboard.writeText(text).then(onSuccess).catch(fallback);
             } else {
-                tryExecCommand();
+                fallback();
             }
 
-            function tryExecCommand() {
-                try {
-                    const textArea = document.createElement("textarea");
-                    textArea.value = text;
-                    textArea.style.position = "fixed";
-                    textArea.style.left = "-999999px";
-                    textArea.style.top = "-999999px";
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-                    
-                    const successful = document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    
-                    if (successful) {
-                        onSuccess();
-                    } else {
-                        throw new Error("execCommand failed");
-                    }
-                } catch (err) {
-                    if (text.startsWith('http')) {
-                        prompt("Ваш браузер заблокировал автоматическое копирование. Скопируйте ссылку вручную:", text);
-                    } else {
-                        alert("Ошибка: Невозможно скопировать текст.");
-                    }
+            function fallback() {
+                if (text.startsWith('http')) {
+                    prompt("Ваш браузер заблокировал автоматическое копирование. Скопируйте ссылку вручную:", text);
+                    // Мы не вызываем onSuccess(), т.к. не знаем, скопировал ли человек текст на самом деле
+                } else {
+                    alert("Ошибка: Невозможно скопировать текст.");
                     onError();
                 }
             }
@@ -1721,15 +1883,6 @@
         });
 
         const toggleButton = document.getElementById('theme-toggle');
-        
-        let storedTheme = null;
-        try {
-            storedTheme = localStorage.getItem('theme');
-        } catch (e) {
-            console.warn("Доступ к localStorage заблокирован настройками браузера", e);
-        }
-
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         function updateThemeIcon() {
             const isDark = document.body.classList.contains('dark-mode');
@@ -1737,9 +1890,6 @@
             document.getElementById('icon-moon').style.display = isDark ? 'none' : 'block';
         }
 
-        if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
-            document.body.classList.add('dark-mode');
-        }
         updateThemeIcon();
 
         toggleButton.onclick = function() {
