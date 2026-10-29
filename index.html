@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="referrer" content="no-referrer">
 
     <title>Windows & Office Selector by DarkTemplar9530</title>
+    <meta name="description" content="Подбор и скачивание образов Windows и Office: выберите версию и разрядность — получите ссылку.">
+    <meta name="theme-color" content="#0078d4">
+    <meta property="og:title" content="Windows &amp; Office Selector">
+    <meta property="og:description" content="Подбор и скачивание образов Windows и Office: выберите версию и разрядность — получите ссылку.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💿%3C/text%3E%3C/svg%3E">
 
     <script>
-        if (window !== window.top) { window.top.location = window.location; }
+        try {
+            if (window !== window.top && window.top.location.hostname !== window.location.hostname) {
+                window.top.location = window.location;
+            }
+        } catch (e) {}
     </script>
 
     <style>
@@ -18,7 +26,7 @@
             --bg-color: #f9f9f9;
             --text-color: #333;
             --h1-color: #0078d4;
-            --link-color: #0078d4;
+            --link-color: #005a9e;
             --item-bg: white;
             --item-border: #ccc;
             --item-shadow: rgba(0,0,0,0.05);
@@ -30,15 +38,15 @@
             --btn-primary-hover: #005a9e;
             --btn-green-bg: #107c41;
             --btn-green-hover: #0b5a2f;
-            --hint-color: #777;
-            --input-border: #ccc;
+            --hint-color: #666;
+            --input-border: #8a8a8a;
             --input-bg: white;
             --desc-bg: #e9f6ff;
             --desc-border: #0078d4;
             --usb-desc-border: #eee;
             --usb-desc-color: #555;
-            --fav-active: #f3a621; 
-            --fav-inactive: #ccc;
+            --fav-active: #b36b00; 
+            --fav-inactive: #8a8a8a;
             --fav-hover: #e09410;
         }
 
@@ -54,17 +62,17 @@
             --path-color: #aaa;
             --btn-copy-bg: #444;
             --btn-copy-hover: #666;
-            --btn-green-bg: #1a9653;
-            --btn-green-hover: #147a41;
+            --btn-green-bg: #107c41;
+            --btn-green-hover: #0b5a2f;
             --hint-color: #aaa;
-            --input-border: #444;
+            --input-border: #8a8a8a;
             --input-bg: #2d2d2d;
             --desc-bg: #2a2a2a;
             --desc-border: #0078d4;
             --usb-desc-border: #444;
             --usb-desc-color: #bbb;
             --fav-active: #F4B23D;
-            --fav-inactive: #555;
+            --fav-inactive: #8a8a8a;
             --fav-hover: #ffd075;
         }
 
@@ -334,12 +342,78 @@
         }
 
         #favorites-header-container {
-            display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 20px;
             margin-bottom: 10px;
             display: none;
+        }
+        .favorites-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .btn-danger-confirm {
+            background-color: #d83b01 !important;
+            color: white !important;
+            border-color: #d83b01 !important;
+        }
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            margin-bottom: 2px;
+            font-size: 13px;
+            color: var(--path-color);
+            font-weight: 600;
+        }
+        .toolbar-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .toolbar-btn {
+            background: none;
+            border: 1px solid var(--item-border);
+            color: var(--hint-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .toolbar-btn:hover {
+            background: var(--item-border);
+            color: var(--text-color);
+        }
+        #search-meta {
+            font-size: 13px;
+            color: var(--path-color);
+            margin-bottom: 10px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .manual-copy-box {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+        }
+        .manual-copy-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 13px;
         }
         
         #favorites-header {
@@ -389,6 +463,11 @@
         .favorite-btn.active {
             color: var(--fav-active);
         }
+        /* --- Доступность: фокус, цветовая схема, уменьшенное движение --- */
+        select:focus-visible, #search-input:focus-visible { outline: 3px solid var(--link-color); outline-offset: 2px; }
+        html { color-scheme: light; }
+        html:has(body.dark-mode) { color-scheme: dark; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
     </style>
 </head>
 <body>
@@ -396,7 +475,7 @@
         (function() {
             'use strict';
             try {
-                var storedTheme = localStorage.getItem('theme');
+                var storedTheme = (localStorage.getItem('wos:theme') || localStorage.getItem('theme'));
                 var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
                     document.body.classList.add('dark-mode');
@@ -407,7 +486,7 @@
 
     <header>
         <h1>Windows & Office Selector by DarkTemplar9530</h1>
-        <button id="theme-toggle" aria-label="Переключить тему" title="Светлая/Темная тема">
+        <button type="button" id="theme-toggle" aria-label="Переключить тему" title="Светлая/Темная тема">
             <svg id="icon-sun" viewBox="0 0 100 100" width="28" height="28" style="display: block;">
                 <defs>
                     <linearGradient id="sun-center" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -443,13 +522,24 @@
     <main>
         <div id="favorites-header-container">
             <h2 id="favorites-header">⭐ Избранное</h2>
-            <button id="clear-favorites-btn" title="Очистить весь список избранного">Очистить всё</button>
+            <div class="favorites-actions">
+                <button type="button" id="clear-favorites-btn" title="Очистить весь список избранного">Очистить всё</button>
+            </div>
         </div>
-        <div id="favorites-container" aria-live="polite"></div>
+        <div id="favorites-container"></div>
         <hr style="border: 0; border-top: 1px solid var(--item-border); margin: 20px 0; opacity: 0.5;" id="favorites-divider" hidden>
 
+        <div id="selection-toolbar" class="toolbar-row" style="display: none;">
+            <span id="selection-breadcrumbs" class="search-result-path" style="margin-bottom: 0;"></span>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" id="share-selection-btn" class="toolbar-btn" title="Скопировать прямую ссылку на выбранный раздел">🔗 Поделиться разделом</button>
+                <button type="button" id="reset-selection-btn" class="toolbar-btn" title="Сбросить выбранные списки в начало">↺ Сбросить выбор</button>
+            </div>
+        </div>
+
         <div id="main"></div>
-        <div id="search-results-container" aria-live="polite" role="status"></div>
+        <div id="search-meta" aria-live="polite"></div>
+        <div id="search-results-container"></div>
         <div id="no-results" aria-live="polite">Ничего не найдено</div>
     </main>
 
@@ -459,7 +549,7 @@
 
         const data = {
             "Windows": {
-                "Оригинальные образы Windows [MSDN & VLSC] (20.10.2026)": {
+                "Оригинальные образы Windows [MSDN & VLSC] (21.10.2026)": {
                     "Windows XP": {
                         "32-bit": {
                             "SP3 Professional OEM Refresh": {
@@ -799,9 +889,6 @@
                                     "64-bit": {
                                         "Windows 10 Enterprise LTSC 2021 [64-bit] [Русский]": "https://disk.yandex.ru/d/fYv_eWK3jNicTA"
                                     },
-                                    "ARM64": {
-                                        "Windows 10 Enterprise LTSC 2021 [ARM64] [Русский]": "https://disk.yandex.ru/d/IuiVfTer7FpmYw"
-                                    }
                                 }
                             },
                             "IoT LTSC": {
@@ -873,21 +960,21 @@
                         "2008 R2 SP1 Volume": {
                             "Windows Server 2008 R2 SP1 Volume [64-bit] [Русский]": "https://disk.yandex.ru/d/o_djznmq3a65-A"
                         },
-                        "2019": {
+                        "Server 2019": {
                             "Windows Server 2019 [64-bit] [Русский]": "https://disk.yandex.ru/d/R9nPGdVP_622SA"
                         },
-                        "2022": {
+                        "Server 2022": {
                             "Windows Server 2022 (21H2) [64-bit] [Русский]": "https://disk.yandex.ru/d/MGpwZnF8rEycEw"
                         },
                         "23H2": {
                             "Windows Server 23H2 [64-bit] [Мультиязычный]": "https://disk.yandex.ru/d/fHfk5t91q120pw"
                         },
-                        "2025": {
+                        "Server 2025": {
                             "Windows Server 2025 (24H2) [64-bit] [Русский]": "https://disk.yandex.ru/d/zwdEYScdUlP7xQ"
                         }
                     }
                 },
-                "Windows by UUP dump (13.10.2026)": {
+                "Windows by UUP dump (26.10.2026)": {
                     "Windows 10 22H2": {
                         "32-bit": {
                             "Windows 10 22H2 [32-bit] [Русский]": "https://disk.yandex.ru/d/4Hz94iQty9WV7Q"
@@ -1113,7 +1200,7 @@
                         }
                     },
                     "Windows Server": {
-                        "2008": {
+                        "Server 2008": {
                             "SP2": {
                                 "32-bit": {
                                     "Windows Server 2008 SP2 [32-bit] [Русский]": "https://disk.yandex.ru/d/xYe_rSe6X1sbZQ"
@@ -1126,27 +1213,27 @@
                                 "Windows Server 2008 R2 SP1 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/fpvqnm3_kk7s3g"
                             }
                         },
-                        "2012": {
+                        "Server 2012": {
                             "UP1": {
                                 "Windows Server 2012 UP1 [64-bit] [Русский]": "https://disk.yandex.ru/d/WHNmCfD8lXDwkg"
                             },
                             "R2 UP3": {
-                                "Windows Server 2012 R2 UP3 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/W7kVCCLfNVKq1Q"
+                                "Windows Server 2012 R2 UP3 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/bT_RQulXcilqQg"
                             }
                         },
-                        "2016": {
+                        "Server 2016": {
                             "Windows Server 2016 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/oRZsI1G6BMIE8g"
                         },
-                        "2019": {
+                        "Server 2019": {
                             "Windows Server 2019 [64-bit] [Русский & English]": "https://disk.yandex.ru/d/bbZg-2Ctf-tXPw"
                         },
-                        "2022": {
+                        "Server 2022": {
                             "Windows Server 2022 (21H2) [64-bit] [Русский & English]": "https://disk.yandex.ru/d/P-MotKzcj26E8A"
                         },
                         "23H2": {
                             "Windows Server 23H2 [64-bit] [Русский]": "https://disk.yandex.ru/d/p18ym0k387jbEg"
                         },
-                        "2025": {
+                        "Server 2025": {
                             "Windows Server 2025 (24H2) [64-bit] [Русский & English]": "https://disk.yandex.ru/d/-stFb9gCrA_2QQ"
                         },
                         "Azure Stack HCI 22H2": {
@@ -1226,7 +1313,7 @@
                         }
                     }
                 },
-                "Office for macOS (22.10.2026)": {
+                "Office for macOS (27.10.2026)": {
                     "Активация": "https://disk.yandex.ru/d/qznWmsvCLz7w0Q",
                     "Скачать / обновить": {
                         "Microsoft 365 and Office": "https://disk.yandex.ru/d/EfiDk_ZxGe_N2g",
@@ -1247,6 +1334,11 @@
                         "Release": "https://disk.yandex.ru/d/eHqqMKkSkm3SIQ"
                     }
                 }
+            },
+            "Запись образа Windows на USB-накопитель 💾": {
+                "Для Windows 8, 8.1, 10, 11 и Server (Rufus, Ventoy, Flashr)": "https://disk.yandex.ru/d/z97KEl-7laHO5Q",
+                "Для Windows 7 и Vista (Rufus, Ventoy, FlashBoot Pro)": "https://disk.yandex.ru/d/AMAtqtojBumDoA",
+                "Для Windows XP": "https://disk.yandex.ru/d/XLyO70kcB3hXGw"
             },
             "Чистая установка Windows 10 и 11😲": {
                 "32-bit": "https://disk.yandex.ru/d/PuNx_14sfVn-Ww",
@@ -1272,12 +1364,28 @@
             "Содержимое папки Windows & Office": "https://disk.yandex.ru/d/F8wP3MGbPxX8zw"
         };
 
+        // ПОРЯДОК КЛЮЧЕЙ: JS ставит ключи-числа ('2019') ПЕРВЫМИ и по возрастанию, игнорируя порядок записи.
+        // Поэтому рядом с нечисловыми ключами пишите 'Server 2019', а не '2019' (иначе в консоли будет предупреждение).
+        (function checkOrder(o, p) {
+            const k = Object.keys(o), n = k.filter(x => /^\d+$/.test(x)).length;
+            if (n && n < k.length) console.warn('Порядок ключей искажён JS:', p.join(' ➔ '), k);
+            k.forEach(x => { if (typeof o[x] === 'object') checkOrder(o[x], p.concat(x)); });
+        })(data, []);
+
+        // --- Поиск: вспомогательные функции ---
+        const RU_KEYS = 'йцукенгшщзхъфывапролджэячсмитьбю', EN_KEYS = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
+        const OFFICE_YEARS = [2007, 2010, 2013, 2016, 2019, 2021, 2024];
+        function toEn(s) { return [...s].map(c => EN_KEYS[RU_KEYS.indexOf(c)] ?? c).join(''); }  // «цштвщцы» → «windows»
+        function splitDigits(s) { return s.replace(/([a-zа-я])(\d)/g, '$1 $2').replace(/(\d)([a-zа-я])/g, '$1 $2'); }  // «windows11» → «windows 11»
+        function stripDates(s) { return s.replace(/\s*\(\d{2}\.\d{2}\.\d{4}\)/g, ''); }  // даты разделов не участвуют в поиске
+        function expandYears(s) { return s.replace(/(20\d\d)-(20\d\d)/g, (m, a, b) => m + ' ' + OFFICE_YEARS.filter(y => y >= +a && y <= +b).join(' ')); }
+
         const sourceDescs = {
         "Оригинальные образы Windows": "Самые последние официальные, оригинальные сборки, созданные Microsoft. Сборки MSDN обновляются каждый 3-й вторник месяца, VLSC – каждый 4-й понедельник месяца.",
-        "Windows by UUP dump": "Скрипт, позволяющий скачивать оригинальные файлы с серверов обновления Windows и преобразовывать их в готовый (.iso) образ. Здесь представлены уже готовые образы. Обновления выходят каждый 2-й вторник месяца (Вторник патчей), также иногда выпускаются внеплановые накопительные обновления после Вторника патчей, которые не интегрируются в оригинальные образы от Microsoft, хоть и выходят позже. Cписок редакций в образе значительно больше. Это точно такие же оригинальные образы, просто собранные по-другому.",
+        "Windows by UUP dump": "Скрипт, позволяющий скачивать оригинальные файлы с серверов обновления Windows и преобразовывать их в готовый (.iso) образ. Здесь представлены уже готовые образы. Обновления выходят каждый 2-й вторник месяца (Вторник патчей), также иногда выпускаются внеплановые накопительные обновления после Вторника патчей, которые не интегрируются в оригинальные образы от Microsoft, хоть и выходят позже. Список редакций в образе значительно больше. Это точно такие же оригинальные образы, просто собранные по-другому.",
         "Windows by rgadguard": "Сборки на основе оригинальных образов MSDN с последующей интеграцией последних обновлений. В них нет никаких косметических изменений и ничего не вырезано. Системы не были в режиме аудита. Присутствует самое большое количество редакций в одном .iso образе. В Windows 11 уже отключены проверки: TPM, Security boot, CPU, Storage и RAM-память. В Windows 10 & 11 также отключён автоматический BitLocker.",
         "Windows by NTDEV": "Облегчённые сборки, не имеющие никакого отношения к оригинальным. Добавлены исключительно ради тестирования и веселья (ну, кому как). Ни в коем случае не устанавливать в качестве основной системы!",
-        "Запись образа Windows на USB-накопитель": "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено нескольких вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.",
+        "Запись образа Windows на USB-накопитель": "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено несколько вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.",
         "Чистая установка Windows": "1) Зачем это нужно? \"autounattend.xml\" или \"Файл ответов\" позволяет устанавливать Windows в полуавтоматическом режиме, практически без вмешательства со стороны пользователя. Здесь представлены уже настроенные файлы для каждой из архитектур. Подробнее ознакомиться с настройками можно, перейдя по ссылке: <a href='https://schneegans.de/windows/unattend-generator' target='_blank' rel='noopener noreferrer'>schneegans.de</a><br>1. Скачайте с ЯД готовый файл ответов для нужной архитектуры;<br>2. Перейдите по ссылке выше на сайт для генерации файлов ответов;<br>3. Найдите блок \"Import a file generated by this service\";<br>4. Нажмите на \"Выберите файл\";<br>5. Выберите скачанный файл;<br>6. Нажмите в том же блоке \"Import file\"<br>После этого вы увидите все применённые мной настройки, а также включённые скрипты, находящиеся внизу страницы. Чтобы понять, что означают включённые скрипты, перейдите по этой ссылке: <a href='https://schneegans.de/windows/unattend-generator/samples' target='_blank' rel='noopener noreferrer'>samples</a><br><br>2) Что с этим делать? Скачайте оригинальный образ Windows от Microsoft и выполните следующие действия:<br>1. Запишите образ Windows на USB-накопитель.<br>2. Скопируйте файл \"autounattend.xml\" в корневую папку USB-накопителя, содержащего файлы установки Windows, и подключите его к компьютеру (файл \"autounattend.xml\" будет находиться в той же папке, что и файл setup.exe).<br>3. Загрузитесь с USB-накопителя, как обычно, чтобы начать установку.",
         "Ratiborus": "Утилиты для автоматической загрузки, установки и активации Office. Позволяют гибко настроить компоненты (Word, Excel и т.д.) и редакцию перед установкой. У вас будет выбор между Volume и Retail версиями. В чём разница?<br><b>Volume</b> – для корпораций. Только обновления безопасности, без новых функций.<br><b>Retail</b> – для частных лиц и малого бизнеса. Включает в себя и обновления безопасности, и новые функции.",
         "Office by rgadguard": "Готовые iso образы Office с интегрированными последними обновлениями. За основу брались оригинальные MSDN образы. У вас будет выбор между Volume и Retail версиями. В чём разница?<br><b>Volume</b> – для корпораций. Только обновления безопасности, без новых функций.<br><b>Retail</b> – для частных лиц и малого бизнеса. Включает в себя и обновления безопасности, и новые функции.",
@@ -1285,7 +1393,7 @@
         };
         const bitnessDesc = "Разрядность или Архитектура операционной системы. Устанавливать ARM64 – только при наличии процессора на архитектуре ARM, например, от Apple или Qualcomm. 32-bit – если ОЗУ < 4 ГБ.";
         const editionDesc = "Если нужна редакция «Домашняя (Home / HSL)», то выбираем «Consumer Edition», если – «Корпоративная (Enterprise)» – «Business Edition». Для редакции «Профессиональная (Pro)» разницы как таковой нет, но если у вас была ранее активирована Windows 10/11 Pro «Consumer Edition», то при переходе на «Business Edition» активировать Windows нужно будет заново. В любом случае, проблем с активацией не будет ни у одной из сборок. Устанавливать можно любую.";
-        const usbDesc = "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено нескольких вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.";
+        const usbDesc = "Различные инструменты для записи ISO-образов Windows на USB-накопитель. Вы можете выбрать любой из имеющихся инструментов для дальнейшей работы. Представлено несколько вариантов, однако это не обязывает вас скачивать их все – это просто список на выбор. Rufus – самая простая программа в использовании, рекомендуется для разовой записи одного образа. Flashr – нужна, если вы не хотите заморачиваться с выбором между MBR, GPT и не понимаете, что это. Ventoy – позволяет хранить на USB-накопителе сразу несколько различных образов, подойдёт для мультизагрузочных носителей. FlashBoot Pro – подойдёт в случае, если у вас возникают проблемы с отсутствующими драйверами при установке Windows 7.";
 
         const flatData = [];
         const generateIndex = (obj, currentPath) => {
@@ -1293,7 +1401,7 @@
                 const val = obj[key];
                 const newPath = [...currentPath, key];
                 if (typeof val === 'string') {
-                    flatData.push({ path: newPath, url: val, searchText: newPath.join(' ').toLowerCase() });
+                    flatData.push({ path: newPath, url: val, searchText: expandYears(stripDates(newPath.join(' '))).toLowerCase() });
                 } else {
                     generateIndex(val, newPath);
                 }
@@ -1305,13 +1413,28 @@
         const searchResultsContainer = document.getElementById('search-results-container');
         const searchInput = document.getElementById('search-input');
         const noResults = document.getElementById('no-results');
+        const searchMeta = document.getElementById('search-meta');
+        const selectionToolbar = document.getElementById('selection-toolbar');
+        const selectionBreadcrumbs = document.getElementById('selection-breadcrumbs');
+        const resetSelectionBtn = document.getElementById('reset-selection-btn');
+        const shareSelectionBtn = document.getElementById('share-selection-btn');
+        let currentActivePath = [];
         const clearFavoritesBtn = document.getElementById('clear-favorites-btn');
 
         let favorites = [];
         try {
-            const stored = localStorage.getItem('my_favorites');
+            const storedNew = localStorage.getItem('wos:favs:v1');
+            const storedOld = localStorage.getItem('my_favorites');
+            const stored = storedNew ?? storedOld;
             const parsed = stored ? JSON.parse(stored) : null;
-            favorites = Array.isArray(parsed) ? parsed : [];
+            favorites = Array.isArray(parsed)
+                ? parsed.filter(f => f && typeof f.title === 'string' && /^https?:\/\//.test(f.url))
+                        .map(f => ({ ...f, path: typeof f.path === 'string' ? f.path : '' }))
+                : [];
+            if (storedOld && !storedNew) {
+                localStorage.setItem('wos:favs:v1', JSON.stringify(favorites));
+                localStorage.removeItem('my_favorites');
+            }
         } catch (e) {
             console.error("Ошибка чтения localStorage", e);
             favorites = [];
@@ -1390,7 +1513,7 @@
 
         function saveFavorites() {
             try {
-                localStorage.setItem('my_favorites', JSON.stringify(favorites));
+                localStorage.setItem('wos:favs:v1', JSON.stringify(favorites));
             } catch (e) {
                 console.error("Ошибка записи в localStorage", e);
             }
@@ -1418,6 +1541,7 @@
 
             const isFav = isFavorite(url);
             const starBtn = document.createElement('button');
+            starBtn.type = 'button';
             starBtn.className = isFav ? "favorite-btn active" : "favorite-btn";
             starBtn.setAttribute('aria-label', isFav ? "Удалить из избранного" : "Добавить в избранное");
             starBtn.setAttribute('data-action', 'favorite');
@@ -1426,8 +1550,10 @@
             starBtn.setAttribute('data-path', pathStr);
             starBtn.title = "Изменить статус избранного";
             starBtn.textContent = isFav ? "★" : "☆";
+            starBtn.setAttribute('aria-pressed', String(isFav));
 
             const copyBtn = document.createElement('button');
+            copyBtn.type = 'button';
             copyBtn.className = 'search-result-btn btn-copy';
             copyBtn.setAttribute('aria-label', "Скопировать ссылку");
             copyBtn.setAttribute('data-action', 'copy');
@@ -1492,10 +1618,24 @@
             container.appendChild(fragment);
         }
 
+        let clearConfirmTimeout = null;
         clearFavoritesBtn.addEventListener('click', () => {
-            if (confirm('Вы уверены, что хотите удалить все сохраненные файлы из избранного?')) {
+            if (clearFavoritesBtn.dataset.confirming === 'true') {
+                clearTimeout(clearConfirmTimeout);
+                clearFavoritesBtn.dataset.confirming = 'false';
+                clearFavoritesBtn.textContent = 'Очистить всё';
+                clearFavoritesBtn.classList.remove('btn-danger-confirm');
                 favorites = [];
                 saveFavorites();
+            } else {
+                clearFavoritesBtn.dataset.confirming = 'true';
+                clearFavoritesBtn.textContent = 'Точно очистить? Нажмите ещё раз';
+                clearFavoritesBtn.classList.add('btn-danger-confirm');
+                clearConfirmTimeout = setTimeout(() => {
+                    clearFavoritesBtn.dataset.confirming = 'false';
+                    clearFavoritesBtn.textContent = 'Очистить всё';
+                    clearFavoritesBtn.classList.remove('btn-danger-confirm');
+                }, 3500);
             }
         });
 
@@ -1507,11 +1647,13 @@
                     btn.innerHTML = '★';
                     btn.title = "Удалить из избранного";
                     btn.setAttribute('aria-label', "Удалить из избранного");
+                    btn.setAttribute('aria-pressed', 'true');
                 } else {
                     btn.classList.remove('active');
                     btn.innerHTML = '☆';
                     btn.title = "Добавить в избранное";
                     btn.setAttribute('aria-label', "Добавить в избранное");
+                    btn.setAttribute('aria-pressed', 'false');
                 }
             });
         }
@@ -1546,7 +1688,7 @@
             return card;
         }
 
-        buildNext(main, data, [], true);
+        // Инициализация дерева происходит после объявления всех вспомогательных функций
 
         const searchAliases = {
             "win": "windows",
@@ -1617,6 +1759,53 @@
 
         let searchTimeout;
 
+        Object.assign(searchAliases, {
+            'word': 'office', 'ворд': 'office', 'excel': 'office', 'эксель': 'office',
+            'powerpoint': 'office', 'outlook': 'office', 'сервер': 'server',
+            'aarch64': 'arm64', 'ltsc': 'enterprise', 'ltsb': 'enterprise',
+            'rufus': 'usb', 'руфус': 'usb', 'ventoy': 'usb', 'вентой': 'usb', 'флешка': 'usb'
+        });
+        function searchFor(q) {  // алиас ДОБАВЛЯЕТ вариант (OR), а не заменяет слово
+            const variants = q.split(/\s+/).filter(Boolean).map(t => [t, searchAliases[t]].filter(Boolean));
+            const groups = variants.map(v => v.map(x => new RegExp('(^|[\\s\\[\\]\\(\\)\\-_,])' + escapeRegExp(x), 'i')));
+            return { tokens: variants.flat(), results: flatData.filter(it => groups.every(g => g.some(rx => rx.test(it.searchText)))) };
+        }
+
+        function updateToolbar(path) {
+            currentActivePath = path;
+            if (path.length > 0 && !searchInput.value.trim()) {
+                selectionToolbar.style.display = 'flex';
+                selectionBreadcrumbs.textContent = path.join(' ➔ ');
+            } else {
+                selectionToolbar.style.display = 'none';
+                selectionBreadcrumbs.textContent = '';
+            }
+            try {
+                const newHash = path.length > 0 ? '#' + path.map(encodeURIComponent).join('/') : '';
+                if (window.location.hash !== newHash) {
+                    history.replaceState(null, '', newHash || window.location.pathname + window.location.search);
+                }
+            } catch (e) {}
+        }
+
+        resetSelectionBtn.addEventListener('click', () => {
+            main.innerHTML = '';
+            updateToolbar([]);
+            buildNext(main, data, [], true);
+        });
+
+        shareSelectionBtn.addEventListener('click', () => {
+            const shareUrl = window.location.href;
+            copyToClipboardFallback(shareUrl, shareSelectionBtn, () => {
+                shareSelectionBtn.textContent = '✓ Ссылка скопирована!';
+                shareSelectionBtn.classList.add('btn-green');
+                setTimeout(() => {
+                    shareSelectionBtn.textContent = '🔗 Поделиться разделом';
+                    shareSelectionBtn.classList.remove('btn-green');
+                }, 2000);
+            }, () => {});
+        });
+
         searchInput.addEventListener('input', function(e) {
             const rawQuery = e.target.value.toLowerCase().trim();
             
@@ -1624,8 +1813,10 @@
                 clearTimeout(searchTimeout);
                 searchResultsContainer.innerHTML = '';
                 noResults.style.display = 'none';
+                searchMeta.style.display = 'none';
                 main.style.display = 'block';
                 searchResultsContainer.style.display = 'none';
+                updateToolbar(currentActivePath);
                 return;
             }
 
@@ -1634,21 +1825,19 @@
                 searchResultsContainer.innerHTML = '';
                 noResults.style.display = 'none';
                 main.style.display = 'none';
+                selectionToolbar.style.display = 'none';
                 searchResultsContainer.style.display = 'block';
 
-                const tokens = rawQuery.split(/\s+/).map(token => {
-                    return searchAliases[token] || token;
-                });
-
-                const tokenRegexes = tokens.map(token => {
-                    return new RegExp('(^|[\\s\\[\\]\\(\\)\\-_,])' + escapeRegExp(token), 'i');
-                });
-
-                const results = flatData.filter(item => {
-                    return tokenRegexes.every(regex => regex.test(item.searchText));
-                });
+                let found = null;  // как набрано → «windows 11» (если слитно) → другая раскладка
+                for (const cand of new Set([rawQuery, splitDigits(rawQuery), splitDigits(toEn(rawQuery))])) {
+                    found = searchFor(cand);
+                    if (found.results.length) break;
+                }
+                const tokens = found.tokens, results = found.results;
 
                 if (results.length > 0) {
+                    searchMeta.textContent = `Найдено совпадений: ${results.length} (нажмите Esc для сброса)`;
+                    searchMeta.style.display = 'flex';
                     const fragment = document.createDocumentFragment();
                     
                     results.forEach(res => {
@@ -1679,9 +1868,21 @@
                     });
                     searchResultsContainer.appendChild(fragment);
                 } else {
+                    searchMeta.style.display = 'none';
                     noResults.style.display = 'block';
                 }
             }, 250);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchInput.value) {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+                searchInput.blur();
+            } else if (e.key === '/' && document.activeElement !== searchInput && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+                e.preventDefault();
+                searchInput.focus();
+            }
         });
 
         function appendUsbSuggestion(container, path) {
@@ -1695,13 +1896,14 @@
             if (fullPath.includes('Windows XP')) {
                 toolUrl = 'https://disk.yandex.ru/d/XLyO70kcB3hXGw';
                 toolName = 'Запись образа на USB-накопитель';
-            } else if (fullPath.includes('Windows 7')) {
+            } else if (fullPath.includes('Windows 7') || fullPath.includes('Windows Vista')) {
                 toolUrl = 'https://disk.yandex.ru/d/AMAtqtojBumDoA';
                 toolName = 'Запись образа на USB-накопитель';
             } else if (
                 fullPath.includes('Windows 8') || 
                 fullPath.includes('Windows 10') || 
-                fullPath.includes('Windows 11')
+                fullPath.includes('Windows 11') ||
+                fullPath.includes('Windows Server')
             ) {
                 toolUrl = 'https://disk.yandex.ru/d/z97KEl-7laHO5Q';
                 toolName = 'Запись образа на USB-накопитель';
@@ -1749,6 +1951,13 @@
             }
         }
 
+        function findMatchedDesc(val) {
+            for (const key in sourceDescs) {
+                if (val.includes(key)) return sourceDescs[key];
+            }
+            return null;
+        }
+
         function buildNext(container, currentObj, path, isRoot = false) {
             if (!currentObj) return;
 
@@ -1774,6 +1983,11 @@
                     return;
                 }
 
+                const stepHeader = document.createElement('div');
+                stepHeader.className = 'step-header';
+                stepHeader.textContent = `Шаг ${path.length + 1}: Выберите вариант / файл`;
+                container.appendChild(stepHeader);
+
                 const select = document.createElement('select');
                 select.setAttribute('aria-label', "Выберите файл");
                 
@@ -1790,6 +2004,19 @@
                 });
 
                 container.appendChild(select);
+
+                const isBitnessEnd = keys.some(k => k.includes('-bit') || k === 'ARM64');
+                if (path.length > 0 && path[0] === 'Windows' && isBitnessEnd) {
+                    const staticDescDiv = document.createElement('div');
+                    staticDescDiv.className = 'desc';
+                    staticDescDiv.textContent = bitnessDesc;
+                    staticDescDiv.style.display = 'block';
+                    container.appendChild(staticDescDiv);
+                }
+
+                const selectionDescDiv = document.createElement('div');
+                selectionDescDiv.className = 'desc';
+                container.appendChild(selectionDescDiv);
                 
                 const resultContainer = document.createElement('div');
                 container.appendChild(resultContainer);
@@ -1797,20 +2024,38 @@
                 select.addEventListener('change', function() {
                     const val = this.value;
                     resultContainer.innerHTML = '';
+                    selectionDescDiv.style.display = 'none';
+                    selectionDescDiv.innerHTML = '';
                     if (val) {
+                        updateToolbar([...path, val]);
+                        const matchedDesc = findMatchedDesc(val);
+                        if (matchedDesc) {
+                            setSafeHTML(selectionDescDiv, matchedDesc);
+                            selectionDescDiv.style.display = 'block';
+                        }
                         const url = currentObj[val];
                         resultContainer.appendChild(createDownloadCard(val, url, true, [...path, val]));
                         appendUsbSuggestion(resultContainer, [...path, val]);
+                        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        updateToolbar(path);
                     }
                 });
                 return;
             }
             
             const wrapper = document.createElement('div');
+            if (!isRoot) {
+                const stepHeader = document.createElement('div');
+                stepHeader.className = 'step-header';
+                stepHeader.textContent = `Шаг ${path.length + 1}: ${path[path.length - 1]}`;
+                wrapper.appendChild(stepHeader);
+            }
+
             const select = document.createElement('select');
             
-            let defaultOptionText = isRoot ? "Выберите, что хотите скачать или сделать" : "Выберите";
-            select.setAttribute('aria-label', defaultOptionText);
+            let defaultOptionText = isRoot ? "Выберите, что хотите скачать или сделать" : "Выберите вариант";
+            select.setAttribute('aria-label', isRoot ? defaultOptionText : 'Выберите: ' + (path[path.length - 1] || 'вариант'));
             
             const defOpt = document.createElement('option');
             defOpt.value = "";
@@ -1860,13 +2105,8 @@
                 selectionDescDiv.innerHTML = ''; 
 
                 if (val) {
-                    let matchedDesc = null;
-                    for (const key in sourceDescs) {
-                        if (val.includes(key)) {
-                            matchedDesc = sourceDescs[key];
-                            break;
-                        }
-                    }
+                    updateToolbar([...path, val]);
+                    const matchedDesc = findMatchedDesc(val);
 
                     if (matchedDesc) {
                         setSafeHTML(selectionDescDiv, matchedDesc); 
@@ -1874,11 +2114,14 @@
                     }
                     
                     buildNext(nextLevelContainer, currentObj[val], [...path, val]);
+                    nextLevelContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    updateToolbar(path);
                 }
             });
         }
         
-        function copyToClipboardFallback(text, onSuccess, onError) {
+        function copyToClipboardFallback(text, triggerBtn, onSuccess, onError) {
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(text).then(onSuccess).catch(tryExecCommand);
             } else {
@@ -1900,22 +2143,35 @@
                     if (successful) {
                         onSuccess();
                     } else {
-                        showPromptFallback();
+                        showInlineManualCopy();
                     }
                 } catch (err) {
-                    showPromptFallback();
+                    showInlineManualCopy();
                 } finally {
                     document.body.removeChild(textArea);
                 }
             }
 
-            function showPromptFallback() {
-                if (text.startsWith('http')) {
-                    prompt("Ваш браузер заблокировал автоматическое копирование. Скопируйте ссылку вручную:", text);
-                } else {
-                    alert("Ошибка: Невозможно скопировать текст.");
-                    onError();
+            function showInlineManualCopy() {
+                if (triggerBtn && triggerBtn.parentElement && /^https?:\/\//i.test(text)) {
+                    const parentCard = triggerBtn.closest('.search-result-item') || triggerBtn.parentElement;
+                    let box = parentCard.querySelector('.manual-copy-box');
+                    if (!box) {
+                        box = document.createElement('div');
+                        box.className = 'manual-copy-box';
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.readOnly = true;
+                        input.className = 'manual-copy-input';
+                        input.value = text;
+                        input.setAttribute('aria-label', 'Скопируйте ссылку вручную');
+                        box.appendChild(input);
+                        parentCard.appendChild(box);
+                        input.focus();
+                        input.select();
+                    }
                 }
+                onError();
             }
         }
 
@@ -1933,25 +2189,49 @@
             if (copyBtn) {
                 const url = copyBtn.getAttribute('data-url');
                 
-                copyToClipboardFallback(url, 
+                copyToClipboardFallback(url, copyBtn,
                     () => {
-                        copyBtn.innerText = 'Скопировано!';
+                        copyBtn.textContent = '✓ Скопировано!';
+                        copyBtn.classList.add('btn-green');
                         if (copyBtn.copyTimeout) clearTimeout(copyBtn.copyTimeout);
                         copyBtn.copyTimeout = setTimeout(() => {
-                            copyBtn.innerText = 'Скопировать ссылку';
+                            copyBtn.textContent = 'Скопировать ссылку';
+                            copyBtn.classList.remove('btn-green');
                         }, 2000);
                     }, 
                     () => {
-                        copyBtn.innerText = 'Ошибка';
+                        copyBtn.textContent = 'Скопируйте вручную ↓';
                         if (copyBtn.copyTimeout) clearTimeout(copyBtn.copyTimeout);
                         copyBtn.copyTimeout = setTimeout(() => {
-                            copyBtn.innerText = 'Скопировать ссылку';
-                        }, 2000);
+                            copyBtn.textContent = 'Скопировать ссылку';
+                        }, 3000);
                     }
                 );
                 return;
             }
         });
+
+        function restoreFromHash() {
+            main.innerHTML = '';
+            buildNext(main, data, [], true);
+            const rawHash = window.location.hash.replace(/^#/, '');
+            if (!rawHash) return;
+            const segments = rawHash.split('/').map(s => {
+                try { return decodeURIComponent(s); } catch (e) { return s; }
+            }).filter(Boolean);
+
+            for (const seg of segments) {
+                const selects = main.querySelectorAll('select');
+                const lastSelect = selects[selects.length - 1];
+                if (!lastSelect) break;
+                const hasOpt = Array.from(lastSelect.options).some(o => o.value === seg);
+                if (!hasOpt) break;
+                lastSelect.value = seg;
+                lastSelect.dispatchEvent(new Event('change'));
+            }
+        }
+
+        restoreFromHash();
 
         const toggleButton = document.getElementById('theme-toggle');
 
@@ -1966,7 +2246,7 @@
         toggleButton.onclick = function() {
             document.body.classList.toggle('dark-mode');
             try {
-                localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+                localStorage.setItem('wos:theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
             } catch (e) {
                 console.warn("Не удалось сохранить тему в localStorage", e);
             }
